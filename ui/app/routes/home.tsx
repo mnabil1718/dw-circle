@@ -5,6 +5,7 @@ import { PostList } from "~/components/post-list";
 import { PostInput } from "~/components/post-input";
 import { ProfileCard } from "~/components/profile-card";
 import { SuggestionCard } from "~/components/suggestion-card";
+import { CreditCard } from "~/components/credit-card";
 
 export const clientMiddleware: Route.ClientMiddlewareFunction[] = [
   authenticateMiddleware,
@@ -35,9 +36,10 @@ export default function Home() {
         </div>
 
         {/* Right Column */}
-        <div className="shrink-0 w-100 flex flex-col gap-5 h-full border-l p-4">
+        <div className="shrink-0 w-100 flex flex-col gap-5 border-l overflow-y-auto scrollbar-none p-4">
           <ProfileCard />
           <SuggestionCard />
+          <CreditCard />
         </div>
       </div>
     </div>
