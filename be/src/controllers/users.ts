@@ -26,11 +26,8 @@ export const postUsers = async (req: Request, res: Response) => {
 export const postLogin = async (req: Request, res: Response) => {
 
     const { identifier, password } = req.body;
-
     const u: UserModel = await getUserByIdentifier(identifier);
-
     await Hasher.compare(password, u.password);
-
     const accessToken: string = await generateJWT({ sub: String(u.id), role: u.role });
 
     const response: LoginUserResponse = {
