@@ -29,3 +29,11 @@ export const loginFormSchema = z.object({
 export type RegisterDTO = z.infer<typeof registerFormSchema>;
 export type LoginDTO = z.infer<typeof loginFormSchema>;
 
+export type UserLoginResponse = {
+    user_id: number;
+    username: string;
+    name: string;
+    email: string;
+    avatar?: string;
+    token: string;
+}

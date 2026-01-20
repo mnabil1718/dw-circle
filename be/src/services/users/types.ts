@@ -35,8 +35,8 @@ export type LoginUserResponse = {
     username: string;
     name: string;
     email: string;
-    token: string;
     avatar?: string;
+    token: string;
 }
 
 

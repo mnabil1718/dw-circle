@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { useAppDispatch } from "~/store/hooks";
 import { Link, useNavigate } from "react-router";
 import { userLogin, userRegister } from "~/services/auth";
 import { loginFormSchema, registerFormSchema, type LoginDTO, type RegisterDTO } from "~/dto/auth";
@@ -16,10 +17,12 @@ import {
 import { Input } from "~/components/ui/input"
 import { Brand } from "~/components/brand";
 import { LoaderDots } from "~/components/loader-dots";
+import { login } from "~/store/auth";
 
 
 export function LoginForm() {
     let navigate = useNavigate();
+    const dispatch = useAppDispatch();
     const form = useForm<LoginDTO>({
         resolver: zodResolver(loginFormSchema),
         defaultValues: {
@@ -29,9 +32,10 @@ export function LoginForm() {
     })
 
     async function onSubmit(values: LoginDTO) {
-
-        await userLogin(values);
+        const user = await userLogin(values);
+        dispatch(login(user));
         form.reset();
+        navigate("/home");
     }
 
     return (

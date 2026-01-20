@@ -42,5 +42,6 @@ export const postLogin = async (req: Request, res: Response) => {
     };
 
     const code = StatusCodes.OK;
+
     res.status(code).json(success(code, "Login successful", response));
 }

@@ -1,6 +1,8 @@
 import type { Route } from "./+types/home";
 import { Welcome } from "../welcome/welcome";
-import { Button } from "~/components/ui/button";
+import { authenticateMiddleware } from "~/middlewares/authenticate";
+
+export const clientMiddleware: Route.ClientMiddlewareFunction[] = [authenticateMiddleware];
 
 export function meta({ }: Route.MetaArgs) {
     return [

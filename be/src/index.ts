@@ -5,9 +5,10 @@ import routes from "./routes/index.js";
 import { errorHandler } from "./middlewares/error.js";
 import { corsMiddleware } from "./middlewares/cors.js";
 import { limiterMiddleware } from "./middlewares/rate-limit.js";
+import cookieParser from "cookie-parser";
 
 const app = express();
-
+app.use(cookieParser());
 app.use(corsMiddleware);
 app.use(limiterMiddleware);
 

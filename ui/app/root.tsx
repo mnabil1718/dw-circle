@@ -6,9 +6,11 @@ import {
     Scripts,
     ScrollRestoration,
 } from "react-router";
-import { Toaster } from "~/components/ui/sonner"
+import { Toaster } from "~/components/ui/sonner";
+import { Provider } from "react-redux";
 import type { Route } from "./+types/root";
 import "./app.css";
+import { store } from "./store/store";
 
 export const links: Route.LinksFunction = () => [
     { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -33,10 +35,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <Links />
             </head>
             <body className="dark">
-                {children}
-                <Toaster />
-                <ScrollRestoration />
-                <Scripts />
+                <Provider store={store}>
+                    {children}
+                    <Toaster />
+                    <ScrollRestoration />
+                    <Scripts />
+                </Provider>
             </body>
         </html>
     );

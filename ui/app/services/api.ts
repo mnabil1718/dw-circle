@@ -3,6 +3,7 @@ import { toast } from "sonner";
 
 export const api = axios.create({
     baseURL: "http://localhost:8080/api/v1",
+    withCredentials: true,
 });
 
 api.interceptors.response.use(
@@ -13,6 +14,7 @@ api.interceptors.response.use(
         if (axios.isAxiosError(err)) {
             // Backend error with response
             if (err.response) {
+
                 msg =
                     err.response.data?.message || msg;
             }
