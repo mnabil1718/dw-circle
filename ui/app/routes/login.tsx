@@ -1,5 +1,9 @@
 import { LoginForm } from "~/components/auth/login-form";
 import type { Route } from "./+types/login";
+import { guestMiddleware } from "../middlewares/guest";
+
+export const clientMiddleware: Route.ClientMiddlewareFunction[] = [guestMiddleware];
+
 export function meta({ }: Route.MetaArgs) {
     return [
         { title: "Circle App - Login to Your Account" },
