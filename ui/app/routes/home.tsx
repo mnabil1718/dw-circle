@@ -2,9 +2,9 @@ import type { Route } from "./+types/home";
 import { authenticateMiddleware } from "~/middlewares/authenticate";
 import { Sidebar } from "~/components/sidebar";
 import { PostInput } from "~/components/post-input";
-import { PostListItem } from "~/components/post-list-item";
 import { ProfileCard } from "~/components/profile-card";
 import { SuggestionCard } from "~/components/suggestion-card";
+import { PostList } from "~/components/post-list";
 
 export const clientMiddleware: Route.ClientMiddlewareFunction[] = [
   authenticateMiddleware,
@@ -31,11 +31,7 @@ export default function Home() {
             <PostInput />
           </header>
 
-          <ul className="flex-1 flex flex-col overflow-y-auto divide-y">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
-              <PostListItem key={i} />
-            ))}
-          </ul>
+          <PostList />
         </div>
 
         {/* Right Column */}

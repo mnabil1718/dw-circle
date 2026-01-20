@@ -1,15 +1,14 @@
-import { configureStore } from '@reduxjs/toolkit'
+import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./auth";
+import threadReducer from "./thread";
 
 export const store = configureStore({
-    reducer: {
-        auth: authReducer
-    }
-})
+  reducer: {
+    auth: authReducer,
+    thread: threadReducer,
+  },
+});
 
-// Infer the type of `store`
-export type AppStore = typeof store
-// Infer the `AppDispatch` type from the store itself
-export type AppDispatch = typeof store.dispatch
-// Same for the `RootState` type
-export type RootState = ReturnType<typeof store.getState>
+export type AppStore = typeof store;
+export type AppDispatch = typeof store.dispatch;
+export type RootState = ReturnType<typeof store.getState>;
