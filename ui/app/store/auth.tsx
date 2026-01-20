@@ -5,10 +5,12 @@ export interface AuthState {
   user: UserLoginResponse | null;
 }
 
+const LOCAL_STORAGE_KEY = "store:auth";
+
 // local storage
 export function loadAuthFromStorage() {
   if (typeof window === "undefined") return null;
-  const item = localStorage.getItem("auth");
+  const item = localStorage.getItem(LOCAL_STORAGE_KEY);
   if (item) {
     return JSON.parse(item);
   }
@@ -25,11 +27,12 @@ const authSlice = createSlice({
   reducers: {
     login(state, action: PayloadAction<UserLoginResponse>) {
       state.user = action.payload;
-      localStorage.setItem("auth", JSON.stringify(action.payload));
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(action.payload));
     },
     logout(state) {
       state.user = null;
-      if (typeof window !== "undefined") localStorage.removeItem("auth");
+      if (typeof window !== "undefined")
+        localStorage.removeItem(LOCAL_STORAGE_KEY);
     },
   },
 });

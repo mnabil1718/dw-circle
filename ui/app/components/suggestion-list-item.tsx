@@ -22,7 +22,7 @@ export function SuggestionListItem({
           <span className="text-muted-foreground">@{username}</span>
         </div>
       </div>
-      <Button variant="outline" className="rounded-full" disabled={!isFollowed}>
+      <Button variant="outline" className="rounded-full" disabled={isFollowed}>
         {isFollowed ? "Following" : "Follow"}
       </Button>
     </li>

@@ -1,6 +1,8 @@
 import { Heart, MessageSquare } from "lucide-react";
 import { Avatar } from "./avatar";
 import type { Thread } from "~/dto/thread";
+import { formatPostDuration } from "~/utils/date";
+import { LikeBtn } from "./like-btn";
 
 type PostListItemProps = {
   thread: Thread;
@@ -17,18 +19,13 @@ export function PostListItem({ thread }: PostListItemProps) {
             @{thread.user.username}
           </span>
           <span className="w-1 h-1 rounded-full bg-muted-foreground"></span>
-          <span className="text-muted-foreground">10h</span>
+          <span className="text-muted-foreground">
+            {formatPostDuration(thread.created_at)}
+          </span>
         </div>
         <p className="text-sm">{thread.content}</p>
         <div className="flex items-center gap-5 text-sm">
-          <button className="flex items-center gap-1.5 opacity-70 hover:opacity-100 cursor-pointer">
-            {thread.isLiked ? (
-              <Heart size={20} fill="white" />
-            ) : (
-              <Heart size={20} />
-            )}{" "}
-            {thread.likes}
-          </button>
+          <LikeBtn isLiked={thread.isLiked} likes={thread.likes} />
           <button className="flex items-center gap-1.5 opacity-70 hover:opacity-100 cursor-pointer">
             <MessageSquare size={20} /> {thread.reply}
           </button>

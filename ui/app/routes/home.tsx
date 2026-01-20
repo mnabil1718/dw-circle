@@ -1,10 +1,10 @@
 import type { Route } from "./+types/home";
 import { authenticateMiddleware } from "~/middlewares/authenticate";
 import { Sidebar } from "~/components/sidebar";
+import { PostList } from "~/components/post-list";
 import { PostInput } from "~/components/post-input";
 import { ProfileCard } from "~/components/profile-card";
 import { SuggestionCard } from "~/components/suggestion-card";
-import { PostList } from "~/components/post-list";
 
 export const clientMiddleware: Route.ClientMiddlewareFunction[] = [
   authenticateMiddleware,
