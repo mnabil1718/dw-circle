@@ -1,9 +1,8 @@
+import { createAppAsyncThunk } from "./with-types";
 import { createSlice } from "@reduxjs/toolkit";
 import { dummyThreads } from "~/data/threads";
 import type { Thread } from "~/dto/thread";
 import type { RootState } from "./store";
-import { createAppAsyncThunk } from "./with-types";
-import { getThreads } from "~/services/thread";
 
 export interface ThreadState {
   threads: Thread[];
@@ -17,6 +16,7 @@ const initialState: ThreadState = {
   error: null,
 };
 
+// THUNKS
 export const fetchThreads = createAppAsyncThunk(
   "threads/fetchThreads",
   async () => {

@@ -1,5 +1,7 @@
 import axios from "axios";
 import { toast } from "sonner";
+import { logout } from "~/store/auth";
+import { store } from "~/store/store";
 
 export const api = axios.create({
     baseURL: "http://localhost:8080/api/v1",
@@ -12,9 +14,13 @@ api.interceptors.response.use(
         let msg = "Something went wrong";
 
         if (axios.isAxiosError(err)) {
+            // auth error, logging out user
+            if (err.response?.status === 401) {
+                store.dispatch(logout());
+                msg = "token expired. Please log in again";
+            }
             // Backend error with response
-            if (err.response) {
-
+            else if (err.response) {
                 msg =
                     err.response.data?.message || msg;
             }

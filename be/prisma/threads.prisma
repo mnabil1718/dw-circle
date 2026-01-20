@@ -1,0 +1,11 @@
+model Thread {
+  id         Int      @id @default(autoincrement())
+  content    String
+  image      String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  created_by Int
+  updated_by Int
+  creator    User     @relation("ThreadCreator", fields: [created_by], references: [id], onDelete: Cascade)
+  updator    User     @relation("ThreadUpdator", fields: [updated_by], references: [id], onDelete: Cascade)
+}
