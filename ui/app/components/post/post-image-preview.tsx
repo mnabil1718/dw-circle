@@ -2,7 +2,11 @@ import { X } from "lucide-react";
 import { useFormContext } from "react-hook-form";
 import type { CreateThreadDTO } from "~/dto/thread";
 
-export function PostImagePreview() {
+export function PostImagePreview({
+  fileInputRef,
+}: {
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
+}) {
   const form = useFormContext<CreateThreadDTO>();
 
   const image = form.watch("image");
@@ -11,12 +15,16 @@ export function PostImagePreview() {
     form.setValue("image", undefined, {
       shouldValidate: true,
     });
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   return (
     <>
       {image && (
-        <div className="relative w-fit h-fit">
+        <div className="relative mt-2 w-fit h-fit">
           <button
             type="button"
             onClick={deleteImage}
@@ -24,7 +32,7 @@ export function PostImagePreview() {
           >
             <X />
           </button>
-          <div className="relative aspect-square max-w-40 w-full overflow-hidden rounded-md">
+          <div className="relative border aspect-square max-w-40 w-full overflow-hidden rounded-md">
             <img
               src={URL.createObjectURL(image)}
               alt={image.name}

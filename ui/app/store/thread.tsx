@@ -1,16 +1,9 @@
 import { createAppAsyncThunk } from "./with-types";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { dummyThreads } from "~/data/threads";
-import type {
-  CreateThreadActionPayload,
-  CreateThreadDTO,
-  CreateThreadResponse,
-  Thread,
-} from "~/dto/thread";
+import type { CreateThreadActionPayload, Thread } from "~/dto/thread";
 import type { RootState } from "./store";
 import { getThreads, postThreads } from "~/services/thread";
-import { selectAuthUser } from "./auth";
-import type { UserLoginResponse } from "~/dto/auth";
 import type { AddLikeDTO } from "~/dto/like";
 import { postLikeThread } from "~/services/like";
 

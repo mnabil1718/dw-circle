@@ -1,0 +1,89 @@
+import { Typebox } from "./typebox";
+import { Avatar } from "../avatar";
+import { Button } from "../ui/button";
+import { FormProvider, useForm } from "react-hook-form";
+import { CreateThreadSchema, type CreateThreadDTO } from "~/dto/thread";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ImageUpload } from "../image-upload";
+import { PostImagePreview } from "./post-image-preview";
+import { useAppDispatch, useAppSelector } from "~/store/hooks";
+import { createThread } from "~/store/thread";
+import { selectAuthUser } from "~/store/auth";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
+import { useRef, useState } from "react";
+
+export function PostInputDialog() {
+  const [open, setOpen] = useState<boolean>(false);
+
+  const dispatch = useAppDispatch();
+  const user = useAppSelector(selectAuthUser);
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const form = useForm<CreateThreadDTO>({
+    resolver: zodResolver(CreateThreadSchema),
+    mode: "onChange",
+    defaultValues: {
+      content: "",
+    },
+  });
+
+  const image = form.watch("image");
+
+  async function onSubmit(values: CreateThreadDTO) {
+    dispatch(createThread({ req: values, user })).unwrap();
+    form.reset();
+    setOpen(false);
+  }
+
+  const openDialog = () => {
+    setOpen(true);
+  };
+
+  return (
+    <>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger className="w-full">
+          <Button
+            onClick={openDialog}
+            className="w-full rounded-full font-medium text-lg py-6 mt-5"
+          >
+            Create Post
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="top-30 translate-y-0 max-w-md w-full p-3">
+          <FormProvider {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="w-full flex flex-col p-4 pt-10 gap-2"
+            >
+              <div className="flex items-start gap-2">
+                <Avatar className="w-10 h-10" />
+                <Typebox maxHeight={300} />
+              </div>
+              <div className="flex pt-3 gap-2 items-center border-t justify-between">
+                <ImageUpload fileInputRef={fileInputRef} />
+                <Button
+                  type="submit"
+                  disabled={!form.formState.isValid}
+                  className="rounded-full px-6"
+                >
+                  Post
+                </Button>
+              </div>
+              <PostImagePreview fileInputRef={fileInputRef} />
+            </form>
+          </FormProvider>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}

@@ -1,8 +1,8 @@
 import type { Route } from "./+types/home";
 import { authenticateMiddleware } from "~/middlewares/authenticate";
 import { Sidebar } from "~/components/sidebar";
-import { PostList } from "~/components/post-list";
-import { PostInput } from "~/components/post-input";
+import { PostList } from "~/components/post/post-list";
+import { PostInput } from "~/components/post/post-input";
 import { ProfileCard } from "~/components/profile-card";
 import { SuggestionCard } from "~/components/suggestion-card";
 import { CreditCard } from "~/components/credit-card";
@@ -36,7 +36,7 @@ export default function Home() {
         </div>
 
         {/* Right Column */}
-        <div className="shrink-0 w-100 flex flex-col gap-5 border-l overflow-y-auto scrollbar-none p-4">
+        <div className="shrink-0 w-120 flex flex-col gap-5 border-l overflow-y-auto scrollbar-none p-4">
           <ProfileCard />
           <SuggestionCard />
           <CreditCard />

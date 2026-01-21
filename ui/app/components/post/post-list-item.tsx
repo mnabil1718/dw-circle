@@ -1,5 +1,5 @@
 import { Divide, Heart, MessageSquare } from "lucide-react";
-import { Avatar } from "./avatar";
+import { Avatar } from "../avatar";
 import type { Thread } from "~/dto/thread";
 import { formatPostDuration } from "~/utils/date";
 import { LikeBtn } from "./like-btn";

@@ -4,9 +4,12 @@ import { useFormContext } from "react-hook-form";
 import { toast } from "sonner";
 import { ThreadImageSchema, type CreateThreadDTO } from "~/dto/thread";
 
-export function ImageUpload() {
+export function ImageUpload({
+  fileInputRef,
+}: {
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
+}) {
   const form = useFormContext<CreateThreadDTO>();
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const clickFileInput = () => {
     fileInputRef.current?.click();
@@ -21,6 +24,7 @@ export function ImageUpload() {
     if (!val.success) {
       const msg = val.error.issues[0].message;
       form.setError("image", { type: "manual", message: msg });
+      e.target.value = "";
       toast.error(msg);
       return;
     }

@@ -1,20 +1,23 @@
 import { Typebox } from "./typebox";
-import { Avatar } from "./avatar";
-import { Button } from "./ui/button";
+import { Avatar } from "../avatar";
+import { Button } from "../ui/button";
 import { FormProvider, useForm } from "react-hook-form";
 import { CreateThreadSchema, type CreateThreadDTO } from "~/dto/thread";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ImageUpload } from "./image-upload";
+import { ImageUpload } from "../image-upload";
 import { PostImagePreview } from "./post-image-preview";
 import { useNavigate } from "react-router";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { createThread } from "~/store/thread";
 import { selectAuthUser } from "~/store/auth";
+import { useRef } from "react";
 
 export function PostInput() {
-  const user = useAppSelector(selectAuthUser);
-  let navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const user = useAppSelector(selectAuthUser);
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   const form = useForm<CreateThreadDTO>({
     resolver: zodResolver(CreateThreadSchema),
     mode: "onChange",
@@ -28,7 +31,6 @@ export function PostInput() {
   async function onSubmit(values: CreateThreadDTO) {
     dispatch(createThread({ req: values, user })).unwrap();
     form.reset();
-    navigate("/home");
   }
 
   return (
@@ -41,7 +43,7 @@ export function PostInput() {
           <Avatar className="w-10 h-10" />
           <Typebox />
           <div className="flex-none flex gap-3 items-center pr-4">
-            <ImageUpload />
+            <ImageUpload fileInputRef={fileInputRef} />
             <Button
               type="submit"
               disabled={!form.formState.isValid}
@@ -51,7 +53,7 @@ export function PostInput() {
             </Button>
           </div>
         </div>
-        <PostImagePreview />
+        <PostImagePreview fileInputRef={fileInputRef} />
       </form>
     </FormProvider>
   );

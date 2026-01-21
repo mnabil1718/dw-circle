@@ -39,7 +39,10 @@ export function PostThumb({ image_url }: { image_url?: string }) {
     <>
       {open && (
         <>
-          <div className="fixed z-10 inset-0 bg-background/50 backdrop-blur-lg px-32 py-10 flex flex-col justify-center items-center">
+          <div
+            onClick={toggleDialog}
+            className="fixed z-10 inset-0 bg-background/50 backdrop-blur-lg px-32 py-10 flex flex-col justify-center items-center"
+          >
             <button
               onClick={toggleDialog}
               className="fixed top-7 right-7 z-20 border p-1 rounded-md cursor-pointer group opacity-70 hover:opacity-100"

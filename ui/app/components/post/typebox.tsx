@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react";
 import { cn } from "~/lib/utils";
-import { FormControl, FormField, FormItem, FormMessage } from "./ui/form";
+import { FormControl, FormField, FormItem, FormMessage } from "../ui/form";
 import { useFormContext } from "react-hook-form";
 import { THREAD_CHAR_LIMIT, type CreateThreadDTO } from "~/dto/thread";
 
-export function Typebox() {
+export function Typebox({ maxHeight = 500 }: { maxHeight?: number }) {
   const form = useFormContext<CreateThreadDTO>();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -16,7 +16,7 @@ export function Typebox() {
     if (!el) return;
 
     el.style.height = "auto";
-    el.style.height = `${Math.min(el.scrollHeight, 500)}px`;
+    el.style.height = `${Math.min(el.scrollHeight, maxHeight)}px`;
   };
 
   const err = form.formState.errors.content;
@@ -29,8 +29,8 @@ export function Typebox() {
   return (
     <div className="flex-1">
       <FormField
-        control={form.control}
         name="content"
+        control={form.control}
         render={({ field }) => (
           <FormItem>
             <FormControl>
@@ -45,7 +45,7 @@ export function Typebox() {
                 }}
                 placeholder="What's Happening?"
                 className={cn(
-                  "w-full outline-none p-2 text-lg resize-none overflow-y-auto",
+                  "w-full outline-none p-2 text-lg resize-none overflow-y-auto scrollbar-minimal",
                   "placeholder:text-muted-foreground",
                   "max-h-125",
                   showError && "border border-destructive",
