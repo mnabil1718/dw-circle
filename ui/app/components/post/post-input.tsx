@@ -6,7 +6,6 @@ import { CreateThreadSchema, type CreateThreadDTO } from "~/dto/thread";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ImageUpload } from "../image-upload";
 import { PostImagePreview } from "./post-image-preview";
-import { useNavigate } from "react-router";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { createThread } from "~/store/thread";
 import { selectAuthUser } from "~/store/auth";
@@ -26,10 +25,8 @@ export function PostInput() {
     },
   });
 
-  const image = form.watch("image");
-
   async function onSubmit(values: CreateThreadDTO) {
-    dispatch(createThread({ req: values, user })).unwrap();
+    dispatch(createThread({ req: values, user }));
     form.reset();
   }
 
@@ -42,7 +39,7 @@ export function PostInput() {
         <div className="flex items-start gap-2">
           <Avatar className="w-10 h-10" />
           <Typebox />
-          <div className="flex-none flex gap-3 items-center pr-4">
+          <div className="flex-none flex gap-3 items-center">
             <ImageUpload fileInputRef={fileInputRef} />
             <Button
               type="submit"

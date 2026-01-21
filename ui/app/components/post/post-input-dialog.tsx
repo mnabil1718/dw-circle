@@ -36,8 +36,6 @@ export function PostInputDialog() {
     },
   });
 
-  const image = form.watch("image");
-
   async function onSubmit(values: CreateThreadDTO) {
     dispatch(createThread({ req: values, user })).unwrap();
     form.reset();
@@ -59,7 +57,7 @@ export function PostInputDialog() {
             Create Post
           </Button>
         </DialogTrigger>
-        <DialogContent className="top-30 translate-y-0 max-w-md w-full p-3">
+        <DialogContent className="top-10 translate-y-0 max-w-md w-full p-3">
           <FormProvider {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}

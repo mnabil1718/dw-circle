@@ -43,6 +43,7 @@ export function Typebox({ maxHeight = 500 }: { maxHeight?: number }) {
                 onChange={(e) => {
                   field.onChange(e);
                 }}
+                rows={1}
                 placeholder="What's Happening?"
                 className={cn(
                   "w-full outline-none p-2 text-lg resize-none overflow-y-auto scrollbar-minimal",
