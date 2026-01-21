@@ -35,9 +35,11 @@ export function PostThumb({ image_url }: { image_url?: string }) {
     };
   }, [open]);
 
+  console.log(" IMAGE URL:  =========    ", image_url);
+
   return (
     <>
-      {open && (
+      {open && image_url && (
         <>
           <div
             onClick={toggleDialog}

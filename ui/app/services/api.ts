@@ -2,6 +2,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { logout } from "~/store/auth";
 import { store } from "~/store/store";
+import { toastError } from "~/utils/toast";
 
 export const api = axios.create({
     baseURL: "http://localhost:8080/api/v1",
@@ -42,7 +43,7 @@ api.interceptors.response.use(
             }
         }
 
-        toast.error(msg);
+        toastError(msg);
 
         // Keep AxiosError shape for caller
         return Promise.reject(err);

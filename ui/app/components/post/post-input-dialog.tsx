@@ -49,13 +49,11 @@ export function PostInputDialog() {
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger className="w-full">
-          <Button
-            onClick={openDialog}
-            className="w-full rounded-full font-medium text-lg py-6 mt-5"
-          >
-            Create Post
-          </Button>
+        <DialogTrigger
+          onClick={openDialog}
+          className="w-full rounded-full font-medium text-lg py-6 mt-5"
+        >
+          Create Post
         </DialogTrigger>
         <DialogContent className="top-10 translate-y-0 max-w-md w-full p-3">
           <FormProvider {...form}>

@@ -5,6 +5,8 @@ import type { CreateThread, RawThreadResponse } from "../services/threads/types.
 import { createThread, getAllThread } from "../services/threads/queries.js";
 import { ThreadMapper } from "../services/threads/map.js";
 import { FilterSchema, type FilterType } from "../utils/filters.js";
+import { getSocketServer } from "../sockets/server.js";
+import { THREAD_CREATED_EVENT } from "../sockets/constants.js";
 
 export const postThreads = async (req: Request, res: Response) => {
     const { sub } = (req as any).user;
@@ -20,6 +22,9 @@ export const postThreads = async (req: Request, res: Response) => {
     const raw: RawThreadResponse = await createThread(data);
     const tweet = ThreadMapper.toResponse(raw);
     const code = StatusCodes.CREATED;
+
+    getSocketServer().emit(THREAD_CREATED_EVENT, { tweet });
+
     res.status(code).json(success(code, "Thread berhasil diposting.", { tweet }));
 }
 

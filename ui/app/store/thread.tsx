@@ -64,7 +64,14 @@ export const deleteLikeThread = createAppAsyncThunk(
 const threadSlice = createSlice({
   name: "threads",
   initialState,
-  reducers: {},
+  reducers: {
+    threadCreated(state, action: PayloadAction<Thread>) {
+      const exists = state.threads.some((t) => t.id === action.payload.id);
+      if (exists) return;
+
+      state.threads.unshift(action.payload);
+    },
+  },
   extraReducers(builder) {
     builder
 
@@ -199,7 +206,7 @@ const threadSlice = createSlice({
   },
 });
 
-export const {} = threadSlice.actions;
+export const { threadCreated } = threadSlice.actions;
 export default threadSlice.reducer;
 
 export const selectAllThreads = (state: RootState) => state.threads.threads;

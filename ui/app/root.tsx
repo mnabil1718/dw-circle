@@ -37,7 +37,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <body className="dark">
         <Provider store={store}>
           {children}
-          <Toaster />
+          <Toaster duration={4000} />
           <ScrollRestoration />
           <Scripts />
         </Provider>

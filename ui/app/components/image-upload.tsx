@@ -1,8 +1,8 @@
-import { ImagePlus } from "lucide-react";
-import { useRef, type ChangeEvent } from "react";
+import { ImagePlus, X } from "lucide-react";
+import { type ChangeEvent } from "react";
 import { useFormContext } from "react-hook-form";
-import { toast } from "sonner";
 import { ThreadImageSchema, type CreateThreadDTO } from "~/dto/thread";
+import { toastError } from "~/utils/toast";
 
 export function ImageUpload({
   fileInputRef,
@@ -25,7 +25,7 @@ export function ImageUpload({
       const msg = val.error.issues[0].message;
       form.setError("image", { type: "manual", message: msg });
       e.target.value = "";
-      toast.error(msg);
+      toastError(msg);
       return;
     }
 
