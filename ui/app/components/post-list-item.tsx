@@ -1,8 +1,9 @@
-import { Heart, MessageSquare } from "lucide-react";
+import { Divide, Heart, MessageSquare } from "lucide-react";
 import { Avatar } from "./avatar";
 import type { Thread } from "~/dto/thread";
 import { formatPostDuration } from "~/utils/date";
 import { LikeBtn } from "./like-btn";
+import { PostThumb } from "./post-thumb";
 
 type PostListItemProps = {
   thread: Thread;
@@ -11,7 +12,7 @@ type PostListItemProps = {
 export function PostListItem({ thread }: PostListItemProps) {
   return (
     <li className="px-5 py-7 w-full flex items-start gap-5">
-      <Avatar className="w-10 h-10" />
+      <Avatar className="w-10 h-10 flex-none" />
       <div className="flex flex-col gap-2">
         <div className="text-sm flex items-center gap-2">
           <h2 className="font-medium">{thread.user.name}</h2>
@@ -23,11 +24,14 @@ export function PostListItem({ thread }: PostListItemProps) {
             {formatPostDuration(thread.created_at)}
           </span>
         </div>
-        <p className="text-sm">{thread.content}</p>
+        <p className="text-sm whitespace-pre-wrap wrap-break-word">
+          {thread.content}
+        </p>
+        <PostThumb image_url={thread.image} />
         <div className="flex items-center gap-5 text-sm">
-          <LikeBtn isLiked={thread.isLiked} likes={thread.likes} />
+          <LikeBtn thread={thread} />
           <button className="flex items-center gap-1.5 opacity-70 hover:opacity-100 cursor-pointer">
-            <MessageSquare size={20} /> {thread.reply}
+            <MessageSquare size={20} /> {thread.replies}
           </button>
         </div>
       </div>

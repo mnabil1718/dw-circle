@@ -1,4 +1,3 @@
-import { ImagePlus } from "lucide-react";
 import { Typebox } from "./typebox";
 import { Avatar } from "./avatar";
 import { Button } from "./ui/button";
@@ -8,11 +7,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ImageUpload } from "./image-upload";
 import { PostImagePreview } from "./post-image-preview";
 import { useNavigate } from "react-router";
-import { useAppDispatch } from "~/store/hooks";
-import { postThreads } from "~/services/thread";
-import { threadAdded } from "~/store/thread";
+import { useAppDispatch, useAppSelector } from "~/store/hooks";
+import { createThread } from "~/store/thread";
+import { selectAuthUser } from "~/store/auth";
 
 export function PostInput() {
+  const user = useAppSelector(selectAuthUser);
   let navigate = useNavigate();
   const dispatch = useAppDispatch();
   const form = useForm<CreateThreadDTO>({
@@ -26,13 +26,10 @@ export function PostInput() {
   const image = form.watch("image");
 
   async function onSubmit(values: CreateThreadDTO) {
-    const res = await postThreads(values);
-    dispatch(threadAdded(res));
+    dispatch(createThread({ req: values, user })).unwrap();
     form.reset();
     navigate("/home");
   }
-
-  console.log(form.formState.errors.image);
 
   return (
     <FormProvider {...form}>

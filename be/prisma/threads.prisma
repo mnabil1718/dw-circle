@@ -10,4 +10,5 @@ model Thread {
   updator    User     @relation("ThreadUpdator", fields: [updated_by], references: [id], onDelete: Cascade)
 
   replies Reply[]
+  likes   Like[]
 }

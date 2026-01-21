@@ -6,28 +6,23 @@ import type {
 import { api } from "./api";
 import type { APIResponse } from "~/dto/api";
 
-// TODO: add token later
-export const getThreads = async (): Promise<Thread[]> => {
-  const res = await api.get<APIResponse<{ threads: Thread[] }>>("/threads");
+export const getThreads = async (limit = 100): Promise<Thread[]> => {
+  const res = await api.get<APIResponse<{ threads: Thread[] }>>(
+    `/threads?limit=${limit}`,
+  );
   return res.data.data!.threads;
 };
 
-export const postThreads = async (
-  req: CreateThreadDTO,
-): Promise<CreateThreadResponse> => {
+export const postThreads = async (req: CreateThreadDTO): Promise<Thread> => {
   const fd = new FormData();
   fd.append("content", req.content);
   if (req.image) fd.append("image", req.image);
 
-  const res = await api.post<APIResponse<{ tweet: CreateThreadResponse }>>(
-    "/threads",
-    fd,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
+  const res = await api.post<APIResponse<{ tweet: Thread }>>("/threads", fd, {
+    headers: {
+      "Content-Type": "multipart/form-data",
     },
-  );
-  console.log(res.data);
+  });
+
   return res.data.data!.tweet;
 };

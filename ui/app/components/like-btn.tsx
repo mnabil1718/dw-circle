@@ -1,25 +1,40 @@
 import { Heart } from "lucide-react";
-import { useState } from "react";
+import type { AddLikeDTO } from "~/dto/like";
+import type { Thread } from "~/dto/thread";
+import { selectAuthUser } from "~/store/auth";
+import { useAppDispatch, useAppSelector } from "~/store/hooks";
+import {
+  createLikeThread,
+  deleteLikeThread,
+  selectThreadById,
+} from "~/store/thread";
 
-export function LikeBtn({
-  isLiked,
-  likes,
-}: {
-  isLiked: boolean;
-  likes: number;
-}) {
-  const [liked, setLiked] = useState<boolean>(isLiked);
+export function LikeBtn({ thread }: { thread: Thread }) {
+  const user = useAppSelector(selectAuthUser);
+  const dispatch = useAppDispatch();
+  const thr = useAppSelector(selectThreadById(thread.id));
 
   const likeHandler = () => {
-    setLiked(!liked);
+    const payload: AddLikeDTO = {
+      user_id: user?.user_id ?? -1,
+      tweet_id: thread.id,
+    };
+
+    if (thr?.isLiked) {
+      dispatch(deleteLikeThread(payload));
+    } else {
+      dispatch(createLikeThread(payload));
+    }
   };
 
   return (
     <button
       onClick={likeHandler}
-      className="flex items-center gap-1.5 opacity-70 hover:opacity-100 cursor-pointer"
+      disabled={user?.user_id === thr?.user.id}
+      className="flex items-center gap-1.5 opacity-70 hover:opacity-100 cursor-pointer disabled:hover:opacity-70 disabled:pointer-events-none"
     >
-      {liked ? <Heart size={20} fill="white" /> : <Heart size={20} />} {likes}
+      {thr?.isLiked ? <Heart size={20} fill="white" /> : <Heart size={20} />}{" "}
+      {thread.likes}
     </button>
   );
 }

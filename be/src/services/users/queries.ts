@@ -30,3 +30,15 @@ export async function getUserByIdentifier(identifier: string): Promise<UserModel
     if (!u) throw new InvariantError("invalid credentials");
     return u;
 }
+
+
+export async function checkUserIDExists(id: number): Promise<void> {
+    const u = await prisma.user.findUnique({
+        where: {
+            id
+        },
+    });
+
+    if (!u) throw new NotFoundError("User not found");
+}
+

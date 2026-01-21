@@ -8,7 +8,7 @@ model Reply {
   updated_at DateTime @updatedAt
   created_by Int
   updated_by Int
-  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user       User     @relation("UserReplies", fields: [user_id], references: [id], onDelete: Cascade)
   thread     Thread   @relation(fields: [thread_id], references: [id], onDelete: Cascade)
   creator    User     @relation("ReplyCreator", fields: [created_by], references: [id], onDelete: Cascade)
   updator    User     @relation("ReplyUpdator", fields: [updated_by], references: [id], onDelete: Cascade)

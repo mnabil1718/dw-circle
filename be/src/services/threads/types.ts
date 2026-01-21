@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { ThreadGetPayload } from "../../generated/prisma/models.js";
 
 export const CreateThreadSchema = z.object({
     content: z.string().min(1).max(300),
@@ -24,9 +25,23 @@ export type Author = {
 }
 
 
+export type RawThreadResponse = ThreadGetPayload<{
+    include: {
+        creator: true;
+        _count: {
+            select: {
+                replies: true;
+                likes: true;
+            };
+        };
+    };
+}>;
+
+
 export type ThreadResponse = {
     id: number;
     content: string;
+    image: string | undefined;
     user: Author;
     created_at: Date;
     likes: number;

@@ -1,10 +1,12 @@
 import z from "zod";
+import type { UserLoginResponse } from "./auth";
 
 export const THREAD_CHAR_LIMIT = 300;
 
 export type Thread = {
     id: number;
     content: string;
+    image?: string;
     user: {
         id: number;
         username: string;
@@ -13,8 +15,9 @@ export type Thread = {
     },
     created_at: string;
     likes: number;
-    reply: number;
+    replies: number;
     isLiked: boolean;
+    optimistic?: boolean;
 }
 
 export type CreateThreadResponse = {
@@ -28,9 +31,14 @@ export type CreateThreadResponse = {
 export const ThreadImageSchema = z.file().max(3 * 1024 * 1024, "image cannot exceeds 3 MB").mime(["image/jpeg", "image/png", "image/webp"]).optional();
 
 export const CreateThreadSchema = z.object({
-    content: z.string().min(1, "Post cannot be empty").max(THREAD_CHAR_LIMIT, `Post cannot exceeds ${THREAD_CHAR_LIMIT} characters`),
+    content: z.string().min(1, "Post cannot be empty").max(THREAD_CHAR_LIMIT, `Post cannot exceeds ${THREAD_CHAR_LIMIT} characters`).transform(v => v.replace(/\r\n/g, "\n").trim()),
     image: ThreadImageSchema,
 });
 
 export type CreateThreadDTO = z.infer<typeof CreateThreadSchema>;
+
+export type CreateThreadActionPayload = {
+    req: CreateThreadDTO,
+    user: UserLoginResponse | null,
+};
 

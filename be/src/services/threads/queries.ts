@@ -1,8 +1,9 @@
-import type { CreateThread } from "./types.js";
-import { type ThreadModel } from "../../generated/prisma/models/Thread.js"
+import type { CreateThread, RawThreadResponse } from "./types.js";
 import { prisma } from "../../lib/prisma/client.js";
+import { buildFilterQuery, type FilterType } from "../../utils/filters.js";
+import { NotFoundError } from "../../utils/errors.js";
 
-export async function createThread(data: CreateThread): Promise<ThreadModel> {
+export async function createThread(data: CreateThread): Promise<RawThreadResponse> {
     return await prisma.thread.create({
         data: {
             content: data.content,
@@ -10,19 +11,46 @@ export async function createThread(data: CreateThread): Promise<ThreadModel> {
             updated_by: data.userId,
             image: data.image,
         },
+        include: {
+            creator: true,
+            _count: {
+                select: {
+                    replies: true,
+                    likes: true,
+                },
+            },
+        },
     });
 }
 
 
-export async function getAllThread(): Promise<ThreadModel[]> {
+export async function getAllThread(filter: FilterType): Promise<RawThreadResponse[]> {
+    const limits = buildFilterQuery(filter);
     return await prisma.thread.findMany({
         include: {
             creator: true,
             _count: {
                 select: {
                     replies: true,
+                    likes: true,
                 }
-            }
-        }
+            },
+        },
+        orderBy: {
+            created_at: "desc",
+        },
+        ...limits
     });
 }
+
+
+export async function checkThreadIDExists(id: number): Promise<void> {
+    const t = await prisma.thread.findUnique({
+        where: {
+            id
+        },
+    });
+
+    if (!t) throw new NotFoundError("Thread not found");
+}
+

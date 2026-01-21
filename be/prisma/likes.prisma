@@ -1,0 +1,16 @@
+model Like {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  thread_id  Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  created_by Int
+  updated_by Int
+  creator    User     @relation("LikeCreator", fields: [created_by], references: [id], onDelete: Cascade)
+  updator    User     @relation("LikeUpdator", fields: [updated_by], references: [id], onDelete: Cascade)
+
+  user   User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  thread Thread @relation(fields: [thread_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, thread_id])
+}

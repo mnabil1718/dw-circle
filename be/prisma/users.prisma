@@ -16,12 +16,19 @@ model User {
   updator       User?     @relation("UserUpdator", fields: [updated_by], references: [id])
   updatedUsers  User[]    @relation("UserUpdator")
 
+  // Relations to Thread
   createdThreads Thread[] @relation("ThreadCreator")
   updatedThreads Thread[] @relation("ThreadUpdator")
-  createdReplies Reply[]  @relation("ReplyCreator")
-  updatedReplies Reply[]  @relation("ReplyUpdator")
 
-  replies Reply[]
+  // Relations to Reply
+  replies        Reply[] @relation("UserReplies")
+  createdReplies Reply[] @relation("ReplyCreator")
+  updatedReplies Reply[] @relation("ReplyUpdator")
+
+  // Relations to Like
+  likes        Like[]
+  createdLikes Like[] @relation("LikeCreator")
+  updatedLikes Like[] @relation("LikeUpdator")
 }
 
 enum USER_ROLE {
