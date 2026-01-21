@@ -6,8 +6,18 @@ import { errorHandler } from "./middlewares/error.js";
 import { corsMiddleware } from "./middlewares/cors.js";
 import { limiterMiddleware } from "./middlewares/rate-limit.js";
 import cookieParser from "cookie-parser";
+import path from "path";
+
+
+const __dirname = new URL(".", import.meta.url).pathname;
 
 const app = express();
+
+app.use(
+    "/static",
+    express.static(path.join(__dirname, "public"))
+);
+
 app.use(cookieParser());
 app.use(corsMiddleware);
 app.use(limiterMiddleware);

@@ -18,6 +18,10 @@ model User {
 
   createdThreads Thread[] @relation("ThreadCreator")
   updatedThreads Thread[] @relation("ThreadUpdator")
+  createdReplies Reply[]  @relation("ReplyCreator")
+  updatedReplies Reply[]  @relation("ReplyUpdator")
+
+  replies Reply[]
 }
 
 enum USER_ROLE {

@@ -8,4 +8,6 @@ model Thread {
   updated_by Int
   creator    User     @relation("ThreadCreator", fields: [created_by], references: [id], onDelete: Cascade)
   updator    User     @relation("ThreadUpdator", fields: [updated_by], references: [id], onDelete: Cascade)
+
+  replies Reply[]
 }

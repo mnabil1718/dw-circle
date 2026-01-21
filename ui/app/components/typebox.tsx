@@ -1,29 +1,67 @@
 import { useEffect, useRef } from "react";
 import { cn } from "~/lib/utils";
+import { FormControl, FormField, FormItem, FormMessage } from "./ui/form";
+import { useFormContext } from "react-hook-form";
+import { THREAD_CHAR_LIMIT, type CreateThreadDTO } from "~/dto/thread";
 
 export function Typebox() {
-  const ref = useRef<HTMLTextAreaElement>(null);
+  const form = useFormContext<CreateThreadDTO>();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const handleInput = () => {
-    const el = ref.current;
+  const value = form.watch("content") || "";
+  const count = value.length;
+
+  const autoResize = () => {
+    const el = textareaRef.current;
     if (!el) return;
 
     el.style.height = "auto";
-    el.style.height = `${Math.min(el.scrollHeight, 500)}px`; // max-h-96 = 384px
+    el.style.height = `${Math.min(el.scrollHeight, 500)}px`;
   };
 
+  const err = form.formState.errors.content;
+  const showError = err?.type === "too_big"; // only show error when character limit exceeded
+
   useEffect(() => {
-    handleInput();
-  }, []);
+    autoResize();
+  }, [value]);
 
   return (
-    <textarea
-      ref={ref}
-      onInput={handleInput}
-      placeholder="What's Happening?"
-      className={cn(
-        "w-full flex-1 outline-none p-2 text-lg placeholder:text-muted-foreground resize-none overflow-y-auto max-h-125",
-      )}
-    />
+    <div className="flex-1">
+      <FormField
+        control={form.control}
+        name="content"
+        render={({ field }) => (
+          <FormItem>
+            <FormControl>
+              <textarea
+                {...field}
+                ref={(e) => {
+                  field.ref(e);
+                  textareaRef.current = e;
+                }}
+                onChange={(e) => {
+                  field.onChange(e);
+                }}
+                placeholder="What's Happening?"
+                className={cn(
+                  "w-full outline-none p-2 text-lg resize-none overflow-y-auto",
+                  "placeholder:text-muted-foreground",
+                  "max-h-125",
+                  showError && "border border-destructive",
+                )}
+              />
+            </FormControl>
+            {showError ? (
+              <FormMessage />
+            ) : (
+              <div className="flex w-full text-xs text-muted-foreground justify-end">
+                {count}/{THREAD_CHAR_LIMIT}
+              </div>
+            )}
+          </FormItem>
+        )}
+      />
+    </div>
   );
 }

@@ -1,7 +1,7 @@
 import { createAppAsyncThunk } from "./with-types";
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { dummyThreads } from "~/data/threads";
-import type { Thread } from "~/dto/thread";
+import type { CreateThreadResponse, Thread } from "~/dto/thread";
 import type { RootState } from "./store";
 
 export interface ThreadState {
@@ -27,7 +27,12 @@ export const fetchThreads = createAppAsyncThunk(
 const threadSlice = createSlice({
   name: "threads",
   initialState,
-  reducers: {},
+  reducers: {
+    threadAdded: (state, action: PayloadAction<CreateThreadResponse>) => {
+      const t = action.payload;
+      //TODO: push to myThreads
+    },
+  },
   extraReducers(builder) {
     builder
       .addCase(fetchThreads.pending, (state, _) => {
@@ -44,7 +49,7 @@ const threadSlice = createSlice({
   },
 });
 
-export const {} = threadSlice.actions;
+export const { threadAdded } = threadSlice.actions;
 export default threadSlice.reducer;
 
 export const selectAllThreads = (state: RootState) => state.threads.threads;

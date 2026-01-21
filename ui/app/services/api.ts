@@ -8,6 +8,18 @@ export const api = axios.create({
     withCredentials: true,
 });
 
+api.interceptors.request.use(
+    (config) => {
+        const token = store.getState().auth.user?.token;
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`
+        }
+
+        return config;
+    },
+    (err) => Promise.reject(err),
+);
+
 api.interceptors.response.use(
     (r) => r,
     (err) => {
