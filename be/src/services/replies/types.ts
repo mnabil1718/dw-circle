@@ -24,6 +24,16 @@ export type RawCreateReplyResponse = ReplyGetPayload<{
     };
 }>;
 
+export type ThreadMetadata = {
+    id: number;
+    replies: number;
+};
+
+export type CreateResponse = {
+    raw: RawCreateReplyResponse;
+    thread: ThreadMetadata;
+};
+
 
 export type RawReplyResponse = ReplyGetPayload<{
     include: {

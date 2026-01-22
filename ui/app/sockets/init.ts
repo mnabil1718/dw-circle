@@ -1,11 +1,12 @@
-import { LIKE_REPLY_TOGGLED_EVENT, LIKE_THREAD_TOGGLED_EVENT, THREAD_CREATED_EVENT } from "~/constants/events";
+import { LIKE_REPLY_TOGGLED_EVENT, LIKE_THREAD_TOGGLED_EVENT, REPLY_CREATED_EVENT, THREAD_CREATED_EVENT } from "~/constants/events";
 import type { ToggleLikeResponse, ToggleReplyLikeResponse } from "~/dto/like";
+import type { Reply, ReplyThreadMetadata } from "~/dto/reply";
 import type { Thread } from "~/dto/thread";
 import { socket } from "~/lib/socket";
 import { selectAuthUser } from "~/store/auth";
-import { replyLikeToggled } from "~/store/reply";
+import { replyCreated, replyLikeToggled } from "~/store/reply";
 import { store } from "~/store/store";
-import { threadLikeToggled, threadCreated } from "~/store/thread";
+import { threadLikeToggled, threadCreated, threadReplyCreated } from "~/store/thread";
 import { toastSuccess } from "~/utils/toast";
 
 export function initSockets() {
@@ -22,6 +23,11 @@ export function initSockets() {
         if (tweet.user.id !== user?.user_id) {
             toastSuccess("New post available!");
         }
+    });
+
+    socket.on(REPLY_CREATED_EVENT, ({ reply, metadata }: { reply: Reply; metadata: ReplyThreadMetadata }) => {
+          store.dispatch(replyCreated(reply));
+          store.dispatch(threadReplyCreated(metadata));
     });
 
     socket.on(LIKE_THREAD_TOGGLED_EVENT, (response: ToggleLikeResponse) => {

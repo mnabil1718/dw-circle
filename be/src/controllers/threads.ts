@@ -6,8 +6,8 @@ import { createThread, getAllThread, getThreadById } from "../services/threads/q
 import { ThreadMapper } from "../services/threads/map.js";
 import { FilterSchema, type FilterType } from "../utils/filters.js";
 import { getSocketServer } from "../sockets/server.js";
-import { THREAD_CREATED_EVENT } from "../constants/events.js";
-import type { RawCreateReplyResponse, RawReplyResponse } from "../services/replies/types.js";
+import { REPLY_CREATED_EVENT, THREAD_CREATED_EVENT } from "../constants/events.js";
+import type { CreateReplyResponse, RawCreateReplyResponse, RawReplyResponse } from "../services/replies/types.js";
 import { createReply, getAllReplies } from "../services/replies/queries.js";
 import { ReplyMapper } from "../services/replies/map.js";
 
@@ -61,17 +61,19 @@ export const postReplyThread = async (req: Request, res: Response) => {
     const { id } = req.params;
     const img = req.file;
 
-    const raw: RawCreateReplyResponse = await createReply({
+    const resp: CreateReplyResponse = await createReply({
         content,
         threadId: Number(id),
         userId: Number(sub),
         image: img?.filename ?? null,
     });
 
-    const reply = ReplyMapper.createToResponse(raw);
+    const reply = ReplyMapper.createToResponse(resp.raw);
     const code = StatusCodes.CREATED;
 
-    res.status(code).json(success(code, "Reply berhasil diposting.", { reply }));
+    getSocketServer().emit(REPLY_CREATED_EVENT, { reply, metadata: resp.thread });
+
+    res.status(code).json(success(code, "Reply berhasil diposting.", { reply, metadata: resp.thread }));
 }
 
 

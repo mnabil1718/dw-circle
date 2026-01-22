@@ -1,10 +1,11 @@
 import { createAppAsyncThunk } from "./with-types";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { CreateThreadActionPayload, Thread } from "~/dto/thread";
-import { type RootState } from "./store";
+import { store, type RootState } from "./store";
 import { getThreadById, getThreads, postThreads } from "~/services/thread";
 import type { AddLikeDTO, ToggleLikeResponse } from "~/dto/like";
 import { postLikeThread } from "~/services/like";
+import type { ReplyThreadMetadata } from "~/dto/reply";
 
 export interface ThreadState {
   threads: Thread[];
@@ -100,6 +101,21 @@ const threadSlice = createSlice({
       const exists = state.threads.some((t) => t.id === action.payload.id);
       if (!exists) {
         state.threads.unshift(action.payload);
+      }
+    },
+    threadReplyCreated(state, action: PayloadAction<ReplyThreadMetadata>) {
+      const { id, replies } = action.payload;
+
+      const listThread = state.threads.find((t) => t.id === id);
+
+      // DO NOT EARLY RETURN IN REDUCER!!!
+      if (listThread) {
+        listThread.replies = replies;
+      }
+
+      const active = state.thread[id];
+      if (active) {
+        active.replies = replies;
       }
     },
     threadLikeToggled(state, action: PayloadAction<ToggleLikeResponse>) {
@@ -274,7 +290,8 @@ const threadSlice = createSlice({
   },
 });
 
-export const { threadCreated, threadLikeToggled } = threadSlice.actions;
+export const { threadCreated, threadReplyCreated, threadLikeToggled } =
+  threadSlice.actions;
 export default threadSlice.reducer;
 
 // ======== THREADS =========

@@ -64,23 +64,23 @@ const replySlice = createSlice({
   name: "replies",
   initialState,
   reducers: {
-    // threadCreated(state, action: PayloadAction<Thread>) {
-    //   // Check if optimistic thread exists
-    //   const optimisticIndex = state.threads.findIndex((t) => t.optimistic);
-    //   if (optimisticIndex !== -1) {
-    //     // Replace
-    //     const temp = state.threads[optimisticIndex];
-    //     // revoke, could cause memory leak
-    //     if (temp.image?.startsWith("blob:")) URL.revokeObjectURL(temp.image);
-    //     state.threads[optimisticIndex] = action.payload;
-    //     return;
-    //   }
-    //   // Otherwise, add like normal
-    //   const exists = state.threads.some((t) => t.id === action.payload.id);
-    //   if (!exists) {
-    //     state.threads.unshift(action.payload);
-    //   }
-    // },
+    replyCreated(state, action: PayloadAction<Reply>) {
+      // Check if optimistic reply exists
+      const optimisticIndex = state.replies.findIndex((r) => r.optimistic);
+      if (optimisticIndex !== -1) {
+        // Replace
+        const temp = state.replies[optimisticIndex];
+        // revoke, could cause memory leak
+        if (temp.image?.startsWith("blob:")) URL.revokeObjectURL(temp.image);
+        state.replies[optimisticIndex] = action.payload;
+        return;
+      }
+      // Otherwise, add like normal
+      const exists = state.replies.some((r) => r.id === action.payload.id);
+      if (!exists) {
+        state.replies.unshift(action.payload);
+      }
+    },
     replyLikeToggled(state, action: PayloadAction<ToggleReplyLikeResponse>) {
       const r = state.replies.find((r) => r.id === action.payload.reply_id);
       if (!r) return;
@@ -149,15 +149,7 @@ const replySlice = createSlice({
       })
 
       .addCase(createReply.fulfilled, (state, action) => {
-        const index = state.replies.findIndex((t) => t.optimistic);
-        if (index !== -1) {
-          const temp = state.replies[index];
-
-          // Revoke local blob URL if needed
-          if (temp.image?.startsWith("blob:")) URL.revokeObjectURL(temp.image);
-
-          state.replies[index] = action.payload;
-        }
+        // HANDLED BY SOCKET DISPATCH
       })
 
       .addCase(createReply.rejected, (state, action) => {
@@ -224,7 +216,7 @@ const replySlice = createSlice({
   },
 });
 
-export const { replyLikeToggled } = replySlice.actions;
+export const { replyLikeToggled, replyCreated } = replySlice.actions;
 export default replySlice.reducer;
 
 // ======== THREADS =========
@@ -232,5 +224,5 @@ export const selectAllReplies = (state: RootState) => state.replies.replies;
 export const selectRepliesById = (id: number) => (state: RootState) =>
   state.replies.replies.find((r) => r.id === id);
 export const selectRepliesStatus = (state: RootState) =>
-  state.threads.listStatus;
+  state.replies.listStatus;
 export const selectRepliesError = (state: RootState) => state.replies.error;

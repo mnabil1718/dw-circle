@@ -19,6 +19,11 @@ export type Reply = {
     optimistic?: boolean;
 }
 
+export type ReplyThreadMetadata = {
+    id: number;
+    replies: number;
+}
+
 export const THREAD_CHAR_LIMIT = 300;
 
 export type CreateReplyResponse = {
