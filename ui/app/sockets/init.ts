@@ -1,10 +1,11 @@
-import { LIKE_TOGGLED_EVENT, THREAD_CREATED_EVENT } from "~/constants/events";
-import type { ToggleLikeResponse } from "~/dto/like";
+import { LIKE_REPLY_TOGGLED_EVENT, LIKE_THREAD_TOGGLED_EVENT, THREAD_CREATED_EVENT } from "~/constants/events";
+import type { ToggleLikeResponse, ToggleReplyLikeResponse } from "~/dto/like";
 import type { Thread } from "~/dto/thread";
 import { socket } from "~/lib/socket";
 import { selectAuthUser } from "~/store/auth";
+import { replyLikeToggled } from "~/store/reply";
 import { store } from "~/store/store";
-import { likeToggled, threadCreated } from "~/store/thread";
+import { threadLikeToggled, threadCreated } from "~/store/thread";
 import { toastSuccess } from "~/utils/toast";
 
 export function initSockets() {
@@ -23,8 +24,12 @@ export function initSockets() {
         }
     });
 
-    socket.on(LIKE_TOGGLED_EVENT, (response: ToggleLikeResponse) => {
-        store.dispatch(likeToggled(response));
+    socket.on(LIKE_THREAD_TOGGLED_EVENT, (response: ToggleLikeResponse) => {
+        store.dispatch(threadLikeToggled(response));
+    });
+
+        socket.on(LIKE_REPLY_TOGGLED_EVENT, (response: ToggleReplyLikeResponse) => {
+        store.dispatch(replyLikeToggled(response));
     });
 
 }

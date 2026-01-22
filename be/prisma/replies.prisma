@@ -12,4 +12,6 @@ model Reply {
   thread     Thread   @relation(fields: [thread_id], references: [id], onDelete: Cascade)
   creator    User     @relation("ReplyCreator", fields: [created_by], references: [id], onDelete: Cascade)
   updator    User     @relation("ReplyUpdator", fields: [updated_by], references: [id], onDelete: Cascade)
+
+  likes Like[] @relation("ReplyLikes") // <-- just the relation name, no fields/references
 }

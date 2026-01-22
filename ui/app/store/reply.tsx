@@ -3,6 +3,8 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type RootState } from "./store";
 import type { CreateReplyActionPayload, Reply } from "~/dto/reply";
 import { getReplies, postReply } from "~/services/reply";
+import type { AddReplyLikeDTO, ToggleReplyLikeResponse } from "~/dto/like";
+import { postLikeReply } from "~/services/like";
 
 export interface ReplyState {
   replies: Reply[];
@@ -43,19 +45,19 @@ export const createReply = createAppAsyncThunk(
 );
 
 // TOGGLE LIKE
-// export const createLikeThread = createAppAsyncThunk(
-//   "threads/incLike",
-//   async (p: AddLikeDTO) => {
-//     return postLikeThread(p);
-//   },
-// );
+export const createLikeReply = createAppAsyncThunk(
+  "replies/incLike",
+  async (p: AddReplyLikeDTO) => {
+    return postLikeReply(p);
+  },
+);
 
-// export const deleteLikeThread = createAppAsyncThunk(
-//   "threads/decLike",
-//   async (p: AddLikeDTO) => {
-//     return postLikeThread(p);
-//   },
-// );
+export const deleteLikeReply = createAppAsyncThunk(
+  "replies/decLike",
+  async (p: AddReplyLikeDTO) => {
+    return postLikeReply(p);
+  },
+);
 
 // ======= SLICE ========
 const replySlice = createSlice({
@@ -79,12 +81,12 @@ const replySlice = createSlice({
     //     state.threads.unshift(action.payload);
     //   }
     // },
-    // likeToggled(state, action: PayloadAction<ToggleLikeResponse>) {
-    //   const t = state.threads.find((t) => t.id === action.payload.thread_id);
-    //   if (!t) return;
-    //   t.optimistic = false;
-    //   t.likes = action.payload.likes;
-    // },
+    replyLikeToggled(state, action: PayloadAction<ToggleReplyLikeResponse>) {
+      const r = state.replies.find((r) => r.id === action.payload.reply_id);
+      if (!r) return;
+      r.optimistic = false;
+      r.likes = action.payload.likes;
+    },
   },
   extraReducers(builder) {
     builder
@@ -161,99 +163,68 @@ const replySlice = createSlice({
       .addCase(createReply.rejected, (state, action) => {
         state.replies = state.replies.filter((r) => !r.optimistic);
         state.error = action.error.message ?? "Failed to reply";
+      })
+
+      //   // ======  CREATE LIKE =====
+      .addCase(createLikeReply.pending, (state, action) => {
+        const { reply_id } = action.meta.arg;
+        if (!reply_id) return;
+
+        const replyInList = state.replies.find((r) => r.id === reply_id);
+        if (replyInList) {
+          replyInList.likes++;
+          replyInList.isLiked = true;
+          replyInList.optimistic = true;
+        }
+
+        state.error = null;
+      })
+      .addCase(createLikeReply.rejected, (state, action) => {
+        const { reply_id } = action.meta.arg;
+        if (!reply_id) return;
+
+        // Revert in array
+        const reply = state.replies.find((r) => r.id === reply_id);
+        if (reply) {
+          reply.likes--;
+          reply.isLiked = false;
+          reply.optimistic = false;
+        }
+
+        state.error = action.error.message ?? "Failed to like";
+      })
+
+      // ======  DELETE LIKE =====
+      .addCase(deleteLikeReply.pending, (state, action) => {
+        const { reply_id } = action.meta.arg;
+        if (!reply_id) return;
+
+        const reply = state.replies.find((r) => r.id === reply_id);
+        if (reply) {
+          reply.likes--;
+          reply.isLiked = false;
+          reply.optimistic = true;
+        }
+
+        state.error = null;
+      })
+      .addCase(deleteLikeReply.rejected, (state, action) => {
+        const { reply_id } = action.meta.arg;
+        if (!reply_id) return;
+
+        const reply = state.replies.find((r) => r.id === reply_id);
+        if (reply) {
+          reply.likes++;
+          reply.isLiked = true;
+          reply.optimistic = false;
+        }
+
+        state.error = action.error.message ?? "Failed to unlike";
       });
-
-    //   // ======  CREATE LIKE =====
-    //   .addCase(createLikeThread.pending, (state, action) => {
-    //     const { tweet_id } = action.meta.arg;
-    //     if (!tweet_id) return;
-
-    //     // Update in threads array
-    //     const threadInList = state.threads.find((t) => t.id === tweet_id);
-    //     if (threadInList) {
-    //       threadInList.likes++;
-    //       threadInList.isLiked = true;
-    //       threadInList.optimistic = true;
-    //     }
-
-    //     // Update active thread
-    //     const threadActive = state.thread[tweet_id];
-    //     if (threadActive) {
-    //       threadActive.likes++;
-    //       threadActive.isLiked = true;
-    //       threadActive.optimistic = true;
-    //     }
-
-    //     state.error = null;
-    //   })
-    //   .addCase(createLikeThread.rejected, (state, action) => {
-    //     const { tweet_id } = action.meta.arg;
-    //     if (!tweet_id) return;
-
-    //     // Revert in threads array
-    //     const threadInList = state.threads.find((t) => t.id === tweet_id);
-    //     if (threadInList) {
-    //       threadInList.likes--;
-    //       threadInList.isLiked = false;
-    //       threadInList.optimistic = false;
-    //     }
-
-    //     // Revert active thread
-    //     const threadActive = state.thread[tweet_id];
-    //     if (threadActive) {
-    //       threadActive.likes--;
-    //       threadActive.isLiked = false;
-    //       threadActive.optimistic = false;
-    //     }
-
-    //     state.error = action.error.message ?? "Failed to like";
-    //   })
-
-    //   // ======  DELETE LIKE =====
-    //   .addCase(deleteLikeThread.pending, (state, action) => {
-    //     const { tweet_id } = action.meta.arg;
-    //     if (!tweet_id) return;
-
-    //     const threadInList = state.threads.find((t) => t.id === tweet_id);
-    //     if (threadInList) {
-    //       threadInList.likes--;
-    //       threadInList.isLiked = false;
-    //       threadInList.optimistic = true;
-    //     }
-
-    //     const threadActive = state.thread[tweet_id];
-    //     if (threadActive) {
-    //       threadActive.likes--;
-    //       threadActive.isLiked = false;
-    //       threadActive.optimistic = true;
-    //     }
-
-    //     state.error = null;
-    //   })
-    //   .addCase(deleteLikeThread.rejected, (state, action) => {
-    //     const { tweet_id } = action.meta.arg;
-    //     if (!tweet_id) return;
-
-    //     const threadInList = state.threads.find((t) => t.id === tweet_id);
-    //     if (threadInList) {
-    //       threadInList.likes++;
-    //       threadInList.isLiked = true;
-    //       threadInList.optimistic = false;
-    //     }
-
-    //     const threadActive = state.thread[tweet_id];
-    //     if (threadActive) {
-    //       threadActive.likes++;
-    //       threadActive.isLiked = true;
-    //       threadActive.optimistic = false;
-    //     }
-
-    //     state.error = action.error.message ?? "Failed to unlike";
-    //   });
   },
 });
 
-export const {} = replySlice.actions;
+export const { replyLikeToggled } = replySlice.actions;
 export default replySlice.reducer;
 
 // ======== THREADS =========

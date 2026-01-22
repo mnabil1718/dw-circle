@@ -1,11 +1,14 @@
 import { Heart } from "lucide-react";
 import type { MouseEvent } from "react";
-import type { AddLikeDTO, AddReplyLikeDTO } from "~/dto/like";
+import type { AddReplyLikeDTO } from "~/dto/like";
 import type { Thread } from "~/dto/thread";
 import { selectAuthUser } from "~/store/auth";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
-import { selectRepliesById } from "~/store/reply";
-import { createLikeThread, deleteLikeThread } from "~/store/thread";
+import {
+  createLikeReply,
+  deleteLikeReply,
+  selectRepliesById,
+} from "~/store/reply";
 
 export function LikeReplyBtn({ reply }: { reply: Thread }) {
   const dispatch = useAppDispatch();
@@ -21,9 +24,9 @@ export function LikeReplyBtn({ reply }: { reply: Thread }) {
     };
 
     if (rpl?.isLiked) {
-      dispatch(deleteLikeThread(payload));
+      dispatch(deleteLikeReply(payload));
     } else {
-      dispatch(createLikeThread(payload));
+      dispatch(createLikeReply(payload));
     }
   };
 

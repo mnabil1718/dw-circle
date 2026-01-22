@@ -22,7 +22,7 @@ export class ThreadMapper {
 
 
 
-    static toResponse(raw: RawCreateThreadResponse): ThreadResponse {
+    static toResponse(raw: RawThreadResponse): ThreadResponse {
         return {
             id: raw.id,
             image: raw.image ? `${STATIC_UPLOAD_PREFIX}${raw.image}` : undefined, // prisma always returns null, not undefined
@@ -36,7 +36,7 @@ export class ThreadMapper {
                 username: raw.creator.username,
                 profile_picture: raw.creator.photo_profile ?? undefined,
             },
-            isLiked: false,
+            isLiked: raw.likes.length > 0,
         };
     }
 

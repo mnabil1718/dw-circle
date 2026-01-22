@@ -102,7 +102,7 @@ const threadSlice = createSlice({
         state.threads.unshift(action.payload);
       }
     },
-    likeToggled(state, action: PayloadAction<ToggleLikeResponse>) {
+    threadLikeToggled(state, action: PayloadAction<ToggleLikeResponse>) {
       const t = state.threads.find((t) => t.id === action.payload.thread_id);
       if (!t) return;
 
@@ -176,15 +176,7 @@ const threadSlice = createSlice({
       })
 
       .addCase(createThread.fulfilled, (state, action) => {
-        const index = state.threads.findIndex((t) => t.optimistic);
-        if (index !== -1) {
-          const temp = state.threads[index];
-
-          // Revoke local blob URL if needed
-          if (temp.image?.startsWith("blob:")) URL.revokeObjectURL(temp.image);
-
-          state.threads[index] = action.payload;
-        }
+        // HANDLED ON SOCKET EVENT
       })
 
       .addCase(createThread.rejected, (state, action) => {
@@ -282,7 +274,7 @@ const threadSlice = createSlice({
   },
 });
 
-export const { threadCreated, likeToggled } = threadSlice.actions;
+export const { threadCreated, threadLikeToggled } = threadSlice.actions;
 export default threadSlice.reducer;
 
 // ======== THREADS =========

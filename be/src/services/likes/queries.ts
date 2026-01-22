@@ -1,7 +1,7 @@
 import { prisma } from "../../lib/prisma/client.js";
-import type { ToggleLikeResponse } from "./types.js";
+import type { ToggleLikeResponse, ToggleReplyLikeResponse } from "./types.js";
 
-export async function createLike(userId: number, threadId: number): Promise<ToggleLikeResponse> {
+export async function createThreadLike(userId: number, threadId: number): Promise<ToggleLikeResponse> {
     const [_, likes] = await prisma.$transaction([
 
         prisma.like.create({
@@ -28,7 +28,7 @@ export async function createLike(userId: number, threadId: number): Promise<Togg
 }
 
 
-export async function deleteLike(userId: number, threadId: number): Promise<ToggleLikeResponse> {
+export async function deleteThreadLike(userId: number, threadId: number): Promise<ToggleLikeResponse> {
 
     const [_, likes] = await prisma.$transaction([
         prisma.like.delete({
@@ -56,7 +56,7 @@ export async function deleteLike(userId: number, threadId: number): Promise<Togg
 }
 
 
-export async function checkLikeExists(userId: number, threadId: number): Promise<boolean> {
+export async function checkThreadLikeExists(userId: number, threadId: number): Promise<boolean> {
     const e = await prisma.like.findUnique({
         where: {
             user_id_thread_id: {
@@ -71,3 +71,80 @@ export async function checkLikeExists(userId: number, threadId: number): Promise
 
     return true;
 }
+
+
+
+
+
+
+export async function createReplyLike(userId: number, replyId: number): Promise<ToggleReplyLikeResponse> {
+    const [_, likes] = await prisma.$transaction([
+
+        prisma.like.create({
+            data: {
+                reply_id: replyId,
+                user_id: userId,
+                created_by: userId,
+                updated_by: userId,
+            },
+        }),
+
+        prisma.like.count({
+            where: {
+                reply_id: replyId,
+            },
+        }),
+    ]);
+
+    return {
+        reply_id: replyId,
+        user_id: userId,
+        likes,
+    };
+}
+
+
+export async function deleteReplyLike(userId: number, replyId: number): Promise<ToggleReplyLikeResponse> {
+
+    const [_, likes] = await prisma.$transaction([
+        prisma.like.delete({
+            where: {
+                user_id_reply_id: {
+                    user_id: userId,
+                    reply_id: replyId,
+                },
+            },
+        }),
+
+        prisma.like.count({
+            where: {
+                reply_id: replyId,
+            },
+        }),
+    ]);
+
+
+    return {
+        user_id: userId,
+        reply_id: replyId,
+        likes,
+    };
+}
+
+
+export async function checkReplyLikeExists(userId: number, replyId: number): Promise<boolean> {
+    const e = await prisma.like.findUnique({
+        where: {
+            user_id_reply_id: {
+                user_id: userId,
+                reply_id: replyId,
+            },
+        },
+    });
+
+
+    if (!e) return false;
+
+    return true;
+}
+

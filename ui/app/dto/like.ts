@@ -13,3 +13,9 @@ export type ToggleLikeResponse = {
     user_id: number;
     likes: number;
 }
+
+export type ToggleReplyLikeResponse = {
+    reply_id: number;
+    user_id: number;
+    likes: number;
+}

@@ -29,7 +29,7 @@ export function ReplyListItem({ reply }: PostListItemProps) {
         </p>
         <ImageViewer image_url={reply.image} />
         <div className="flex items-center gap-5 text-sm">
-          {/* <LikeReplyBtn reply={reply} /> */}
+          <LikeReplyBtn reply={reply} />
         </div>
       </div>
     </li>
