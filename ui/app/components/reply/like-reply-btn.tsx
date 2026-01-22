@@ -1,29 +1,26 @@
 import { Heart } from "lucide-react";
 import type { MouseEvent } from "react";
-import type { AddLikeDTO } from "~/dto/like";
+import type { AddLikeDTO, AddReplyLikeDTO } from "~/dto/like";
 import type { Thread } from "~/dto/thread";
 import { selectAuthUser } from "~/store/auth";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
-import {
-  createLikeThread,
-  deleteLikeThread,
-  selectThreadsById,
-} from "~/store/thread";
+import { selectRepliesById } from "~/store/reply";
+import { createLikeThread, deleteLikeThread } from "~/store/thread";
 
-export function LikeBtn({ thread }: { thread: Thread }) {
-  const user = useAppSelector(selectAuthUser);
+export function LikeReplyBtn({ reply }: { reply: Thread }) {
   const dispatch = useAppDispatch();
-  const thr = useAppSelector(selectThreadsById(thread.id));
+  const user = useAppSelector(selectAuthUser);
+  const rpl = useAppSelector(selectRepliesById(reply.id));
 
   const likeHandler = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
 
-    const payload: AddLikeDTO = {
+    const payload: AddReplyLikeDTO = {
       user_id: user?.user_id ?? -1,
-      tweet_id: thread.id,
+      reply_id: reply.id,
     };
 
-    if (thr?.isLiked) {
+    if (rpl?.isLiked) {
       dispatch(deleteLikeThread(payload));
     } else {
       dispatch(createLikeThread(payload));
@@ -33,11 +30,11 @@ export function LikeBtn({ thread }: { thread: Thread }) {
   return (
     <button
       onClick={likeHandler}
-      disabled={user?.user_id === thr?.user.id}
+      disabled={user?.user_id === rpl?.user.id}
       className="flex items-center gap-1.5 opacity-70 hover:opacity-100 cursor-pointer disabled:hover:opacity-70"
     >
-      {thr?.isLiked ? <Heart size={20} fill="white" /> : <Heart size={20} />}{" "}
-      {thread.likes}
+      {rpl?.isLiked ? <Heart size={20} fill="white" /> : <Heart size={20} />}{" "}
+      {rpl?.likes}
     </button>
   );
 }

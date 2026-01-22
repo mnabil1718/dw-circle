@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 import { useEffect, useState, type MouseEvent } from "react";
 
-export function PostThumb({ image_url }: { image_url: string | undefined }) {
+export function ImageViewer({ image_url }: { image_url: string | undefined }) {
   const [open, setOpen] = useState<boolean>(false);
   const [transition, setTransition] = useState<boolean>(false); // will be delayed a bit after opening dialog
   const toggleDialog = (e: MouseEvent<HTMLElement>) => {

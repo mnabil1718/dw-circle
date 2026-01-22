@@ -1,7 +1,6 @@
 import type { Route } from "./+types/home";
 import { authenticateMiddleware } from "~/middlewares/authenticate";
 import { PostList } from "~/components/post/post-list";
-import { PostInput } from "~/components/post/post-input";
 import { Link, useParams } from "react-router";
 import { useEffect } from "react";
 import { Button } from "~/components/ui/button";
@@ -10,10 +9,12 @@ import { SinglePost } from "~/components/post/single-post";
 import {
   fetchThread,
   selectThreadById,
-  selectThreadsStatus,
+  selectThreadStatus,
 } from "~/store/thread";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { useFeed } from "~/layouts/post-layout";
+import { ReplyInput } from "~/components/reply/reply-input";
+import { ReplyList } from "~/components/reply/reply-list";
 
 export const clientMiddleware: Route.ClientMiddlewareFunction[] = [
   authenticateMiddleware,
@@ -24,13 +25,13 @@ export default function Post() {
   const { feedRef } = useFeed();
   const dispatch = useAppDispatch();
   const thread = useAppSelector(selectThreadById(Number(params.id)));
-  const threadsStatus = useAppSelector(selectThreadsStatus);
+  const threadStatus = useAppSelector(selectThreadStatus(Number(params.id)));
 
   useEffect(() => {
-    if (threadsStatus === "idle") {
+    if (threadStatus === "idle") {
       dispatch(fetchThread(Number(params.id)));
     }
-  }, [thread, dispatch, params.id]);
+  }, [threadStatus, dispatch, params.id]);
 
   useEffect(() => {
     feedRef.current?.scrollTo({
@@ -72,11 +73,11 @@ export default function Post() {
         </div>
         <SinglePost thread={thread} />
         <div className="border-t px-7 py-5">
-          <PostInput placeholder="Type Your Reply!" />
+          <ReplyInput placeholder="Type Your Reply!" threadId={thread.id} />
         </div>
       </header>
 
-      <PostList />
+      <ReplyList threadId={thread.id} />
     </>
   );
 }

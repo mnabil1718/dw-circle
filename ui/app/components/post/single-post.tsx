@@ -1,9 +1,9 @@
 import type { Thread } from "~/dto/thread";
 import { Avatar } from "../avatar";
-import { PostThumb } from "./post-thumb";
-import { LikeBtn } from "./like-btn";
 import { MessageSquare } from "lucide-react";
 import { formatDate, formatTime } from "~/utils/date";
+import { ImageViewer } from "../image-viewer";
+import { SingleLikeBtn } from "./single-like-btn";
 
 type SinglePostProps = {
   thread: Thread;
@@ -29,7 +29,7 @@ export function SinglePost({ thread }: SinglePostProps) {
           <p className="whitespace-pre-wrap wrap-break-word">
             {thread.content}
           </p>
-          <PostThumb image_url={thread.image} />
+          <ImageViewer image_url={thread.image} />
         </div>
 
         {/* Time */}
@@ -41,7 +41,7 @@ export function SinglePost({ thread }: SinglePostProps) {
 
         {/* Stats */}
         <div className="flex items-center gap-8 text-sm">
-          <LikeBtn thread={thread} />
+          <SingleLikeBtn thread={thread} />
           <button className="flex items-center gap-1.5 opacity-70 hover:opacity-100 cursor-pointer">
             <MessageSquare size={20} /> {thread.replies} Replies
           </button>

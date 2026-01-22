@@ -5,11 +5,13 @@ import {
 } from "@reduxjs/toolkit";
 import authReducer from "./auth";
 import threadReducer from "./thread";
+import replyReducer from "./reply";
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     threads: threadReducer,
+    replies: replyReducer,
   },
 });
 

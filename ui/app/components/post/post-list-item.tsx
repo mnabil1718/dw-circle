@@ -3,8 +3,8 @@ import { Avatar } from "../avatar";
 import type { Thread } from "~/dto/thread";
 import { formatPostDuration } from "~/utils/date";
 import { LikeBtn } from "./like-btn";
-import { PostThumb } from "./post-thumb";
 import { useNavigate } from "react-router";
+import { ImageViewer } from "../image-viewer";
 
 type PostListItemProps = {
   thread: Thread;
@@ -36,7 +36,7 @@ export function PostListItem({ thread }: PostListItemProps) {
         <p className="text-sm whitespace-pre-wrap wrap-break-word">
           {thread.content}
         </p>
-        <PostThumb image_url={thread.image} />
+        <ImageViewer image_url={thread.image} />
         <div className="flex items-center gap-5 text-sm">
           <LikeBtn thread={thread} />
           <button
