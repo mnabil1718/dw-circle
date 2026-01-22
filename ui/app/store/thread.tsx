@@ -1,21 +1,21 @@
 import { createAppAsyncThunk } from "./with-types";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { dummyThreads } from "~/data/threads";
 import type { CreateThreadActionPayload, Thread } from "~/dto/thread";
-import { store, type RootState } from "./store";
-import { getThreads, postThreads } from "~/services/thread";
+import { type RootState } from "./store";
+import { getThreadById, getThreads, postThreads } from "~/services/thread";
 import type { AddLikeDTO, ToggleLikeResponse } from "~/dto/like";
 import { postLikeThread } from "~/services/like";
-import { selectAuthUser } from "./auth";
 
 export interface ThreadState {
   threads: Thread[];
+  thread: Record<number, Thread>;
   status: "idle" | "pending" | "succeeded" | "failed";
   error: string | null;
 }
 
 const initialState: ThreadState = {
-  threads: dummyThreads,
+  threads: [],
+  thread: {},
   status: "idle",
   error: null,
 };
@@ -36,6 +36,22 @@ export const fetchThreads = createAppAsyncThunk(
       }
     },
   },
+);
+
+// GET BY ID
+export const fetchThread = createAppAsyncThunk(
+  "threads/fetchThread",
+  async (id: number) => {
+    return await getThreadById(id);
+  },
+  // {
+  //   condition(arg, thunkApi) {
+  //     const status = selectThreadsStatus(thunkApi.getState());
+  //     if (status !== "idle") {
+  //       return false;
+  //     }
+  //   },
+  // },
 );
 
 // CREATE
@@ -107,6 +123,22 @@ const threadSlice = createSlice({
       })
 
       .addCase(fetchThreads.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message ?? "Unknown Error";
+      })
+
+      // ======  GET SINGLE THREAD =====
+      .addCase(fetchThread.pending, (state, _) => {
+        state.status = "pending";
+      })
+
+      .addCase(fetchThread.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        const t = action.payload;
+        state.thread[t.id] = t;
+      })
+
+      .addCase(fetchThread.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message ?? "Unknown Error";
       })
@@ -230,7 +262,9 @@ export const { threadCreated, likeToggled } = threadSlice.actions;
 export default threadSlice.reducer;
 
 export const selectAllThreads = (state: RootState) => state.threads.threads;
-export const selectThreadById = (id: number) => (state: RootState) =>
+export const selectThreadsById = (id: number) => (state: RootState) =>
   state.threads.threads.find((t) => t.id === id);
+export const selectThreadById = (id: number) => (state: RootState) =>
+  state.threads.thread[id];
 export const selectThreadsStatus = (state: RootState) => state.threads.status;
 export const selectThreadsError = (state: RootState) => state.threads.error;

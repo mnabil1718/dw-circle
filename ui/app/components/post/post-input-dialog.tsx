@@ -51,7 +51,7 @@ export function PostInputDialog() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger
           onClick={openDialog}
-          className="w-full rounded-full font-medium text-lg py-6 mt-5"
+          className="w-full bg-primary cursor-pointer rounded-full text-lg p-3 mt-5"
         >
           Create Post
         </DialogTrigger>

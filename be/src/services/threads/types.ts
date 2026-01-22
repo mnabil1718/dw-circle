@@ -24,6 +24,17 @@ export type Author = {
     profile_picture: string | undefined;
 }
 
+export type RawCreateThreadResponse = ThreadGetPayload<{
+    include: {
+        creator: true;
+        _count: {
+            select: {
+                replies: true;
+                likes: true;
+            };
+        };
+    };
+}>;
 
 export type RawThreadResponse = ThreadGetPayload<{
     include: {

@@ -1,11 +1,7 @@
 import type { Route } from "./+types/home";
 import { authenticateMiddleware } from "~/middlewares/authenticate";
-import { Sidebar } from "~/components/sidebar";
 import { PostList } from "~/components/post/post-list";
 import { PostInput } from "~/components/post/post-input";
-import { ProfileCard } from "~/components/profile-card";
-import { SuggestionCard } from "~/components/suggestion-card";
-import { CreditCard } from "~/components/credit-card";
 
 export const clientMiddleware: Route.ClientMiddlewareFunction[] = [
   authenticateMiddleware,
@@ -20,28 +16,15 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Home() {
   return (
-    <div className="bg-background h-screen">
-      <div className="mx-auto md:max-w-[80vw] w-full h-screen flex p-2">
-        {/* Left Sidebar */}
-        <Sidebar />
-
-        {/* Center Feed */}
-        <div className="flex flex-col flex-1">
-          <header className="pt-7 px-5 border-b">
-            <h1 className="text-2xl font-semibold mb-3">Home</h1>
-            <PostInput />
-          </header>
-
-          <PostList />
+    <>
+      <header className="pt-7 border-b sticky top-0 z-10 bg-background/80 backdrop-blur-lg">
+        <h1 className="px-7 text-2xl font-semibold mb-5">Home</h1>
+        <div className="px-7 mb-7">
+          <PostInput />
         </div>
+      </header>
 
-        {/* Right Column */}
-        <div className="shrink-0 w-120 flex flex-col gap-5 border-l overflow-y-auto scrollbar-none p-4">
-          <ProfileCard />
-          <SuggestionCard />
-          <CreditCard />
-        </div>
-      </div>
-    </div>
+      <PostList />
+    </>
   );
 }

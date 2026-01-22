@@ -16,7 +16,7 @@ export function initSockets() {
           const user = selectAuthUser(store.getState());
 
         // cannot broadcast on backend because we dont 
-        //   emit socket event in socket listener, use this
+        // emit socket event in socket listener, use this
         // manual check instead.
         if (tweet.user.id !== user?.user_id) {
             toastSuccess("New post available!");

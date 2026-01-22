@@ -10,9 +10,12 @@ import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { createThread } from "~/store/thread";
 import { selectAuthUser } from "~/store/auth";
 import { useRef } from "react";
-import { toastSuccess } from "~/utils/toast";
 
-export function PostInput() {
+type PostInputOptions = {
+  placeholder?: string;
+};
+
+export function PostInput(param?: PostInputOptions) {
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectAuthUser);
 
@@ -35,11 +38,11 @@ export function PostInput() {
     <FormProvider {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full flex flex-col p-4 gap-2"
+        className="w-full flex flex-col gap-2"
       >
         <div className="flex items-start gap-2">
           <Avatar className="w-10 h-10" />
-          <Typebox />
+          <Typebox placeholder={param?.placeholder} />
           <div className="flex-none flex gap-3 items-center">
             <ImageUpload fileInputRef={fileInputRef} />
             <Button

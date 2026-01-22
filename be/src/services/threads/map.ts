@@ -1,9 +1,8 @@
-import type { ThreadModel } from "../../generated/prisma/models.js";
 import { STATIC_UPLOAD_PREFIX } from "../../constants/upload.js";
-import type { RawThreadResponse, ThreadResponse } from "./types.js";
+import type { RawCreateThreadResponse, RawThreadResponse, ThreadResponse } from "./types.js";
 
 export class ThreadMapper {
-    static toResponse(raw: RawThreadResponse): ThreadResponse {
+    static createToResponse(raw: RawCreateThreadResponse): ThreadResponse {
         return {
             id: raw.id,
             image: raw.image ? `${STATIC_UPLOAD_PREFIX}${raw.image}` : undefined, // prisma always returns null, not undefined
@@ -20,6 +19,28 @@ export class ThreadMapper {
             isLiked: false,
         };
     }
+
+
+
+    static toResponse(raw: RawCreateThreadResponse): ThreadResponse {
+        return {
+            id: raw.id,
+            image: raw.image ? `${STATIC_UPLOAD_PREFIX}${raw.image}` : undefined, // prisma always returns null, not undefined
+            content: raw.content,
+            created_at: raw.created_at,
+            replies: raw._count.replies,
+            likes: raw._count.likes,
+            user: {
+                id: raw.creator.id,
+                name: raw.creator.full_name,
+                username: raw.creator.username,
+                profile_picture: raw.creator.photo_profile ?? undefined,
+            },
+            isLiked: false,
+        };
+    }
+
+
 
     static toResponses(arr: RawThreadResponse[]): ThreadResponse[] {
         return arr.map((t) => {

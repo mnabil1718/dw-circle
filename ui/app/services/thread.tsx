@@ -13,6 +13,11 @@ export const getThreads = async (limit = 100): Promise<Thread[]> => {
   return res.data.data!.threads;
 };
 
+export const getThreadById = async (id: number): Promise<Thread> => {
+  const res = await api.get<APIResponse<{ thread: Thread }>>(`/threads/${id}`);
+  return res.data.data!.thread;
+};
+
 export const postThreads = async (req: CreateThreadDTO): Promise<Thread> => {
   const fd = new FormData();
   fd.append("content", req.content);

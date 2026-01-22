@@ -30,3 +30,26 @@ export function formatPostDuration(iso_date_string: string): string {
         });
     }
 }
+
+
+export function formatTime(isoString: string): string {
+  const date = new Date(isoString);
+
+  const hours = date.getHours() % 12 || 12; 
+
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const ampm = date.getHours() >= 12 ? "PM" : "AM";
+
+  return `${hours}:${minutes} ${ampm}`;
+}
+
+
+export function formatDate(isoString: string): string {
+  const date = new Date(isoString);
+
+  const month = date.toLocaleString("en-US", { month: "short" });
+  const day = date.getDate();
+  const year = date.getFullYear();
+  
+  return `${month} ${day}, ${year}`;
+}

@@ -22,7 +22,7 @@ export function ProfileCard() {
           </Button>
         </div>
         <div className="flex flex-col gap-1">
-          <h2 className="text-xl font-bold">{user!.name}</h2>
+          <h2 className="text-xl font-bold">{user?.name ?? "No name"}</h2>
           <span className="text-sm text-muted-foreground">
             @{user!.username}
           </span>

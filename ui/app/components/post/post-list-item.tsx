@@ -1,17 +1,26 @@
-import { Divide, Heart, MessageSquare } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import { Avatar } from "../avatar";
 import type { Thread } from "~/dto/thread";
 import { formatPostDuration } from "~/utils/date";
 import { LikeBtn } from "./like-btn";
 import { PostThumb } from "./post-thumb";
+import { useNavigate } from "react-router";
 
 type PostListItemProps = {
   thread: Thread;
 };
 
 export function PostListItem({ thread }: PostListItemProps) {
+  let navigate = useNavigate();
+  const nav = () => {
+    navigate(`/posts/${thread.id}`);
+  };
+
   return (
-    <li className="px-5 py-7 w-full flex items-start gap-5">
+    <li
+      onClick={nav}
+      className="px-5 py-7 w-full flex items-start gap-5 cursor-pointer"
+    >
       <Avatar className="w-10 h-10 flex-none" />
       <div className="flex flex-col gap-2">
         <div className="text-sm flex items-center gap-2">
@@ -30,7 +39,10 @@ export function PostListItem({ thread }: PostListItemProps) {
         <PostThumb image_url={thread.image} />
         <div className="flex items-center gap-5 text-sm">
           <LikeBtn thread={thread} />
-          <button className="flex items-center gap-1.5 opacity-70 hover:opacity-100 cursor-pointer">
+          <button
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center gap-1.5 opacity-70 hover:opacity-100 cursor-pointer"
+          >
             <MessageSquare size={20} /> {thread.replies}
           </button>
         </div>

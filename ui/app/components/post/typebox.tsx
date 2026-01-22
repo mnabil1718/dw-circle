@@ -4,7 +4,13 @@ import { FormControl, FormField, FormItem, FormMessage } from "../ui/form";
 import { useFormContext } from "react-hook-form";
 import { THREAD_CHAR_LIMIT, type CreateThreadDTO } from "~/dto/thread";
 
-export function Typebox({ maxHeight = 500 }: { maxHeight?: number }) {
+export function Typebox({
+  maxHeight = 500,
+  placeholder = "What's Happening?",
+}: {
+  maxHeight?: number;
+  placeholder?: string;
+}) {
   const form = useFormContext<CreateThreadDTO>();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -44,7 +50,7 @@ export function Typebox({ maxHeight = 500 }: { maxHeight?: number }) {
                   field.onChange(e);
                 }}
                 rows={1}
-                placeholder="What's Happening?"
+                placeholder={placeholder}
                 className={cn(
                   "w-full outline-none p-2 text-lg resize-none overflow-y-auto scrollbar-minimal",
                   "placeholder:text-muted-foreground",

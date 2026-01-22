@@ -1,0 +1,52 @@
+import type { Thread } from "~/dto/thread";
+import { Avatar } from "../avatar";
+import { PostThumb } from "./post-thumb";
+import { LikeBtn } from "./like-btn";
+import { MessageSquare } from "lucide-react";
+import { formatDate, formatTime } from "~/utils/date";
+
+type SinglePostProps = {
+  thread: Thread;
+};
+
+export function SinglePost({ thread }: SinglePostProps) {
+  return (
+    <div className="py-7 px-7 w-full flex items-start gap-5">
+      <div className="flex flex-col gap-5">
+        {/* Profile */}
+        <div className="flex items-center gap-4">
+          <Avatar className="w-10 h-10 flex-none" />
+          <div className="text-sm gap-2">
+            <h2 className="font-medium">{thread.user.name}</h2>
+            <span className="text-sm text-muted-foreground">
+              @{thread.user.username}
+            </span>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="flex flex-col gap-2">
+          <p className="whitespace-pre-wrap wrap-break-word">
+            {thread.content}
+          </p>
+          <PostThumb image_url={thread.image} />
+        </div>
+
+        {/* Time */}
+        <span className="text-sm text-muted-foreground flex items-center gap-1">
+          <span>{formatTime(thread.created_at)}</span>
+          <span className="w-1 h-1 rounded-full bg-muted-foreground"></span>
+          <span>{formatDate(thread.created_at)}</span>
+        </span>
+
+        {/* Stats */}
+        <div className="flex items-center gap-8 text-sm">
+          <LikeBtn thread={thread} />
+          <button className="flex items-center gap-1.5 opacity-70 hover:opacity-100 cursor-pointer">
+            <MessageSquare size={20} /> {thread.replies} Replies
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

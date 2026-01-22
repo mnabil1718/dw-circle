@@ -18,8 +18,16 @@ export function PostList() {
     }
   }, [threadsStatus, dispatch]);
 
+  if (threads.length < 1) {
+    return (
+      <div className="flex flex-1 flex-col justify-center items-center text-muted-foreground">
+        No Posts yet! Go ahead and write one
+      </div>
+    );
+  }
+
   return (
-    <ul className="flex-1 flex flex-col overflow-y-auto scrollbar-minimal divide-y">
+    <ul className="flex flex-col divide-y">
       {threads.map((t, i) => (
         <PostListItem key={i} thread={t} />
       ))}
