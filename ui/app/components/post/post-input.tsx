@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { createThread } from "~/store/thread";
 import { selectAuthUser } from "~/store/auth";
 import { useRef } from "react";
+import { toastSuccess } from "~/utils/toast";
 
 export function PostInput() {
   const dispatch = useAppDispatch();
@@ -28,6 +29,7 @@ export function PostInput() {
   async function onSubmit(values: CreateThreadDTO) {
     dispatch(createThread({ req: values, user }));
     form.reset();
+    toastSuccess("Post uploaded");
   }
 
   return (

@@ -5,8 +5,14 @@ export type ToastPosition = "bottom-center" | "bottom-left" | "bottom-right" | "
 export function toastError(msg: string, dir: ToastPosition = "top-center") {
     toast.error(msg, {
             position: dir,
-            style: {
-                backgroundColor: "oklch(45.5% 0.188 13.697)"
-            }
+            className: "bg-red-700/70! border!",
         });
+}
+
+
+export function toastSuccess(msg: string, dir: ToastPosition = "top-center") {
+    toast.success(msg, {
+      className: "bg-slate-700/70! border!",
+      position: dir,
+    });
 }
