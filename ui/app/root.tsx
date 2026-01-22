@@ -11,6 +11,9 @@ import { Provider } from "react-redux";
 import type { Route } from "./+types/root";
 import "./app.css";
 import { store } from "./store/store";
+import { useEffect } from "react";
+import { initSockets } from "./sockets/init";
+import { socket } from "./lib/socket";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -26,6 +29,14 @@ export const links: Route.LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    initSockets();
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
   return (
     <html lang="en">
       <head>

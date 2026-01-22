@@ -6,3 +6,9 @@ export const CreateLikeSchema = z.object({
 });
 
 export type CreateLike = z.infer<typeof CreateLikeSchema>;
+
+export type ToggleLikeResponse = {
+    thread_id: number;
+    user_id: number;
+    likes: number;
+}

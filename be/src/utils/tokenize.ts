@@ -1,9 +1,9 @@
 import { jwtVerify, SignJWT } from "jose";
-import { AuthorizationError } from "./errors.js";
+import { AuthenticationError } from "./errors.js";
 import { config } from "../utils/config.js";
 
 export type JwtPayload = {
-    sub: string; // RFC 7519
+    sub: string; // RFC 751
     role: string;
 }
 
@@ -22,7 +22,7 @@ export const verifyJWT = async (jwt: string): Promise<JwtPayload> => {
         const { payload } = await jwtVerify<JwtPayload>(jwt, JWT_SECRET);
         return payload;
     } catch (error) {
-        throw new AuthorizationError("invalid or expired token");
+        throw new AuthenticationError("invalid or expired token");
     }
 }
 

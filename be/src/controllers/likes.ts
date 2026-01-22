@@ -5,6 +5,9 @@ import { checkUserIDExists } from "../services/users/queries.js";
 import { AuthorizationError } from "../utils/errors.js";
 import { checkThreadIDExists } from "../services/threads/queries.js";
 import { checkLikeExists, createLike, deleteLike } from "../services/likes/queries.js";
+import { getSocketServer } from "../sockets/server.js";
+import type { ToggleLikeResponse } from "../services/likes/types.js";
+import { LIKE_TOGGLED_EVENT } from "../constants/events.js";
 
 export const postLikes = async (req: Request, res: Response) => {
     const { sub } = (req as any).user;
@@ -18,12 +21,16 @@ export const postLikes = async (req: Request, res: Response) => {
     await checkThreadIDExists(threadId);
 
     const exists = await checkLikeExists(loggedInUserId, threadId);
+    let result: ToggleLikeResponse;
 
     if (exists) {
-        await deleteLike(loggedInUserId, threadId);
+        result = await deleteLike(loggedInUserId, threadId);
     } else {
-        await createLike(loggedInUserId, threadId);
+        result = await createLike(loggedInUserId, threadId);
     }
+
+    getSocketServer().emit(LIKE_TOGGLED_EVENT, result);
+
     const code = StatusCodes.OK;
-    res.status(code).json(success(code, "Tweet liked successfully", undefined));
+    res.status(code).json(success(code, "Tweet liked successfully", result));
 }

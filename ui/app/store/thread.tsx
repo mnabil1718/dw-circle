@@ -2,10 +2,11 @@ import { createAppAsyncThunk } from "./with-types";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { dummyThreads } from "~/data/threads";
 import type { CreateThreadActionPayload, Thread } from "~/dto/thread";
-import type { RootState } from "./store";
+import { store, type RootState } from "./store";
 import { getThreads, postThreads } from "~/services/thread";
-import type { AddLikeDTO } from "~/dto/like";
+import type { AddLikeDTO, ToggleLikeResponse } from "~/dto/like";
 import { postLikeThread } from "~/services/like";
+import { selectAuthUser } from "./auth";
 
 export interface ThreadState {
   threads: Thread[];
@@ -70,6 +71,13 @@ const threadSlice = createSlice({
       if (exists) return;
 
       state.threads.unshift(action.payload);
+    },
+    likeToggled(state, action: PayloadAction<ToggleLikeResponse>) {
+      const t = state.threads.find((t) => t.id === action.payload.thread_id);
+      if (!t) return;
+
+      t.optimistic = false;
+      t.likes = action.payload.likes;
     },
   },
   extraReducers(builder) {
@@ -153,7 +161,7 @@ const threadSlice = createSlice({
       })
 
       .addCase(createLikeThread.fulfilled, (state, action) => {
-        // TODO
+        // KEEP EMPTY, HANDLED IN SOCKET LISTENER
       })
 
       .addCase(createLikeThread.rejected, (state, action) => {
@@ -188,7 +196,7 @@ const threadSlice = createSlice({
       })
 
       .addCase(deleteLikeThread.fulfilled, (state, action) => {
-        // TODO
+        // KEEP EMPTY, HANDLED IN SOCKET LISTENER
       })
 
       .addCase(deleteLikeThread.rejected, (state, action) => {
@@ -206,7 +214,7 @@ const threadSlice = createSlice({
   },
 });
 
-export const { threadCreated } = threadSlice.actions;
+export const { threadCreated, likeToggled } = threadSlice.actions;
 export default threadSlice.reducer;
 
 export const selectAllThreads = (state: RootState) => state.threads.threads;

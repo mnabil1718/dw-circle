@@ -24,7 +24,7 @@ export async function createThread(data: CreateThread): Promise<RawThreadRespons
 }
 
 
-export async function getAllThread(filter: FilterType): Promise<RawThreadResponse[]> {
+export async function getAllThread(user_id: number, filter: FilterType): Promise<RawThreadResponse[]> {
     const limits = buildFilterQuery(filter);
     return await prisma.thread.findMany({
         include: {
@@ -34,6 +34,14 @@ export async function getAllThread(filter: FilterType): Promise<RawThreadRespons
                     replies: true,
                     likes: true,
                 }
+            },
+            likes: {
+                where: {
+                    user_id,
+                },
+                select: {
+                    user_id: true,
+                },
             },
         },
         orderBy: {

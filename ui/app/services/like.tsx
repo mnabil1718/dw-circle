@@ -1,8 +1,10 @@
 import type { APIResponse } from "~/dto/api";
-import type { AddLikeDTO } from "~/dto/like";
+import type { AddLikeDTO, ToggleLikeResponse } from "~/dto/like";
 import { api } from "./api";
 
-export const postLikeThread = async (values: AddLikeDTO): Promise<string> => {
-  const res = await api.post<APIResponse<void>>("/likes", values);
-  return res.data.message;
+export const postLikeThread = async (
+  values: AddLikeDTO,
+): Promise<ToggleLikeResponse> => {
+  const res = await api.post<APIResponse<ToggleLikeResponse>>("/likes", values);
+  return res.data.data!;
 };

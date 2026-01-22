@@ -1,3 +1,3 @@
-import { config } from "./config.js";
+import { config } from "../utils/config.js";
 
 export const STATIC_UPLOAD_PREFIX = `${config.host}:${config.port}/static/uploads/`;

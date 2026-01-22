@@ -6,7 +6,7 @@ import { createThread, getAllThread } from "../services/threads/queries.js";
 import { ThreadMapper } from "../services/threads/map.js";
 import { FilterSchema, type FilterType } from "../utils/filters.js";
 import { getSocketServer } from "../sockets/server.js";
-import { THREAD_CREATED_EVENT } from "../sockets/constants.js";
+import { THREAD_CREATED_EVENT } from "../constants/events.js";
 
 export const postThreads = async (req: Request, res: Response) => {
     const { sub } = (req as any).user;
@@ -30,10 +30,11 @@ export const postThreads = async (req: Request, res: Response) => {
 
 
 export const getThreads = async (req: Request, res: Response) => {
-    // const { sub } = (req as any).user;
+    const { sub } = (req as any).user;
     const filter: FilterType = FilterSchema.parse(req.query);
 
-    const raw: RawThreadResponse[] = await getAllThread(filter);
+    const raw: RawThreadResponse[] = await getAllThread(Number(sub), filter);
+
     const threads = ThreadMapper.toResponses(raw);
     const code = StatusCodes.OK;
     res.status(code).json(success(code, "Get Data Thread Successfully", { threads }));

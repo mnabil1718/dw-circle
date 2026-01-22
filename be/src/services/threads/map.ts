@@ -1,5 +1,5 @@
 import type { ThreadModel } from "../../generated/prisma/models.js";
-import { STATIC_UPLOAD_PREFIX } from "../../utils/constants.js";
+import { STATIC_UPLOAD_PREFIX } from "../../constants/upload.js";
 import type { RawThreadResponse, ThreadResponse } from "./types.js";
 
 export class ThreadMapper {
@@ -36,7 +36,7 @@ export class ThreadMapper {
                     username: t.creator.username,
                     profile_picture: t.creator.photo_profile ?? undefined,
                 },
-                isLiked: false,
+                isLiked: t.likes.length > 0,
             };
         });
     }
