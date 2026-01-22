@@ -5,14 +5,14 @@ export type ToastPosition = "bottom-center" | "bottom-left" | "bottom-right" | "
 export function toastError(msg: string, dir: ToastPosition = "top-center") {
     toast.error(msg, {
             position: dir,
-            className: "bg-red-700/70! border!",
+            className: "bg-red-700/70! backdrop-blur-md! border!",
         });
 }
 
 
 export function toastSuccess(msg: string, dir: ToastPosition = "top-center") {
     toast.success(msg, {
-      className: "bg-slate-700/70! border!",
+      className: "bg-slate-700/70! backdrop-blur-md! border!",
       position: dir,
     });
 }

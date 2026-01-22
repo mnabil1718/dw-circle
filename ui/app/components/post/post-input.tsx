@@ -29,7 +29,6 @@ export function PostInput() {
   async function onSubmit(values: CreateThreadDTO) {
     dispatch(createThread({ req: values, user }));
     form.reset();
-    toastSuccess("Post uploaded");
   }
 
   return (
