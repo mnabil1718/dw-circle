@@ -67,10 +67,23 @@ const threadSlice = createSlice({
   initialState,
   reducers: {
     threadCreated(state, action: PayloadAction<Thread>) {
-      const exists = state.threads.some((t) => t.id === action.payload.id);
-      if (exists) return;
+      // Check if optimistic thread exists
+      const optimisticIndex = state.threads.findIndex((t) => t.optimistic);
+      if (optimisticIndex !== -1) {
+        // Replace
+        const temp = state.threads[optimisticIndex];
 
-      state.threads.unshift(action.payload);
+        if (temp.image?.startsWith("blob:")) URL.revokeObjectURL(temp.image);
+
+        state.threads[optimisticIndex] = action.payload;
+        return;
+      }
+
+      // Otherwise, add like normal
+      const exists = state.threads.some((t) => t.id === action.payload.id);
+      if (!exists) {
+        state.threads.unshift(action.payload);
+      }
     },
     likeToggled(state, action: PayloadAction<ToggleLikeResponse>) {
       const t = state.threads.find((t) => t.id === action.payload.thread_id);
@@ -125,11 +138,10 @@ const threadSlice = createSlice({
 
       .addCase(createThread.fulfilled, (state, action) => {
         const index = state.threads.findIndex((t) => t.optimistic);
-
         if (index !== -1) {
           const temp = state.threads[index];
 
-          // revoke, could cause memory leak
+          // Revoke local blob URL if needed
           if (temp.image?.startsWith("blob:")) URL.revokeObjectURL(temp.image);
 
           state.threads[index] = action.payload;

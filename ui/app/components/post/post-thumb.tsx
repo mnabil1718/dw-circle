@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export function PostThumb({ image_url }: { image_url?: string }) {
+export function PostThumb({ image_url }: { image_url: string | undefined }) {
   const [open, setOpen] = useState<boolean>(false);
   const [transition, setTransition] = useState<boolean>(false); // will be delayed a bit after opening dialog
   const toggleDialog = () => {
@@ -37,7 +37,7 @@ export function PostThumb({ image_url }: { image_url?: string }) {
 
   return (
     <>
-      {open && image_url && (
+      {open && (
         <>
           <div
             onClick={toggleDialog}
@@ -57,16 +57,19 @@ export function PostThumb({ image_url }: { image_url?: string }) {
           </div>
         </>
       )}
-      <div
-        onClick={toggleDialog}
-        className="relative max-w-full max-h-96 overflow-hidden rounded-md mb-2 cursor-pointer"
-      >
-        <img
-          src={image_url}
-          alt={image_url}
-          className="w-full h-full object-cover"
-        />
-      </div>
+
+      {image_url && (
+        <div
+          onClick={toggleDialog}
+          className="relative max-w-full max-h-96 overflow-hidden rounded-md mb-2 cursor-pointer"
+        >
+          <img
+            src={image_url}
+            alt={image_url}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
     </>
   );
 }
