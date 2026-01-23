@@ -5,7 +5,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { CreateThreadSchema, type CreateThreadDTO } from "~/dto/thread";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ImageUpload } from "../image-upload";
-import { PostImagePreview } from "./post-image-preview";
+import { ImageUploadPreview } from "../image-upload-preview";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { createThread } from "~/store/thread";
 import { selectAuthUser } from "~/store/auth";
@@ -54,7 +54,7 @@ export function PostInput(param?: PostInputOptions) {
             </Button>
           </div>
         </div>
-        <PostImagePreview fileInputRef={fileInputRef} />
+        <ImageUploadPreview<CreateThreadDTO> fileInputRef={fileInputRef} />
       </form>
     </FormProvider>
   );

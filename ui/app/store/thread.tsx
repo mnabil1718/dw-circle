@@ -113,6 +113,7 @@ const threadSlice = createSlice({
         listThread.replies = replies;
       }
 
+      // DO NOT EARLY RETURN IN REDUCER!!!
       const active = state.thread[id];
       if (active) {
         active.replies = replies;

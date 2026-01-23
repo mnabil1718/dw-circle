@@ -5,6 +5,7 @@ import { formatPostDuration } from "~/utils/date";
 import { LikeBtn } from "./like-btn";
 import { useNavigate } from "react-router";
 import { ImageViewer } from "../image-viewer";
+import { ReplyInputDialog } from "../reply/reply-input-dialog";
 
 type PostListItemProps = {
   thread: Thread;
@@ -37,14 +38,16 @@ export function PostListItem({ thread }: PostListItemProps) {
           {thread.content}
         </p>
         <ImageViewer image_url={thread.image} />
-        <div className="flex items-center gap-5 text-sm">
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="flex items-center gap-5 text-sm"
+        >
           <LikeBtn thread={thread} />
-          <button
+          <ReplyInputDialog thread={thread} />
+          {/* <button
             onClick={(e) => e.stopPropagation()}
             className="flex items-center gap-1.5 opacity-70 hover:opacity-100 cursor-pointer"
-          >
-            <MessageSquare size={20} /> {thread.replies}
-          </button>
+          ></button> */}
         </div>
       </div>
     </li>

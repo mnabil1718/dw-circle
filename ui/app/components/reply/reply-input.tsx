@@ -5,19 +5,19 @@ import { FormProvider, useForm } from "react-hook-form";
 import { CreateThreadSchema, type CreateThreadDTO } from "~/dto/thread";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ImageUpload } from "../image-upload";
-import { PostImagePreview } from "../post/post-image-preview";
+import { ImageUploadPreview } from "../image-upload-preview";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { selectAuthUser } from "~/store/auth";
 import { useRef } from "react";
 import type { CreateReplyDTO } from "~/dto/reply";
 import { createReply } from "~/store/reply";
 
-type PostInputOptions = {
+type ReplyInputOptions = {
   placeholder?: string;
   threadId: number;
 };
 
-export function ReplyInput(param: PostInputOptions) {
+export function ReplyInput(param: ReplyInputOptions) {
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectAuthUser);
 
@@ -56,7 +56,7 @@ export function ReplyInput(param: PostInputOptions) {
             </Button>
           </div>
         </div>
-        <PostImagePreview fileInputRef={fileInputRef} />
+        <ImageUploadPreview<CreateReplyDTO> fileInputRef={fileInputRef} />
       </form>
     </FormProvider>
   );

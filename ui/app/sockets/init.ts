@@ -28,6 +28,7 @@ export function initSockets() {
     socket.on(REPLY_CREATED_EVENT, ({ reply, metadata }: { reply: Reply; metadata: ReplyThreadMetadata }) => {
           store.dispatch(replyCreated(reply));
           store.dispatch(threadReplyCreated(metadata));
+          
     });
 
     socket.on(LIKE_THREAD_TOGGLED_EVENT, (response: ToggleLikeResponse) => {

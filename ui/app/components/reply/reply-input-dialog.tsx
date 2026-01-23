@@ -1,13 +1,14 @@
-import { Typebox } from "./typebox";
 import { Avatar } from "../avatar";
 import { Button } from "../ui/button";
 import { FormProvider, useForm } from "react-hook-form";
-import { CreateThreadSchema, type CreateThreadDTO } from "~/dto/thread";
+import {
+  CreateThreadSchema,
+  type CreateThreadDTO,
+  type Thread,
+} from "~/dto/thread";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ImageUpload } from "../image-upload";
-import { ImageUploadPreview } from "../image-upload-preview";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
-import { createThread } from "~/store/thread";
 import { selectAuthUser } from "~/store/auth";
 
 import {
@@ -18,17 +19,31 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { useRef, useState } from "react";
+import { useRef, useState, type MouseEvent } from "react";
+import { ImageUploadPreview } from "../image-upload-preview";
+import type { CreateReplyDTO } from "~/dto/reply";
+import { createReply } from "~/store/reply";
+import { Typebox } from "../post/typebox";
+import { MessageSquare } from "lucide-react";
+import { formatPostDuration } from "~/utils/date";
+import { useNavigate } from "react-router";
+import { PostMiniPreview } from "./post-mini-preview";
 
-export function PostInputDialog() {
+type ReplyInputOptions = {
+  placeholder?: string;
+  thread: Thread;
+};
+
+export function ReplyInputDialog(param: ReplyInputOptions) {
   const [open, setOpen] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectAuthUser);
+  let navigate = useNavigate();
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const form = useForm<CreateThreadDTO>({
+  const form = useForm<CreateReplyDTO>({
     resolver: zodResolver(CreateThreadSchema),
     mode: "onChange",
     defaultValues: {
@@ -36,13 +51,14 @@ export function PostInputDialog() {
     },
   });
 
-  async function onSubmit(values: CreateThreadDTO) {
-    dispatch(createThread({ req: values, user })).unwrap();
+  async function onSubmit(values: CreateReplyDTO) {
+    dispatch(createReply({ req: values, user, threadId: param.thread.id }));
     form.reset();
+    navigate(`/posts/${param.thread.id}`);
     setOpen(false);
   }
 
-  const openDialog = () => {
+  const openDialog = (e: MouseEvent<HTMLButtonElement>) => {
     setOpen(true);
   };
 
@@ -51,9 +67,9 @@ export function PostInputDialog() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger
           onClick={openDialog}
-          className="w-full bg-primary cursor-pointer rounded-full text-lg p-3 mt-5"
+          className="flex items-center gap-1.5 opacity-70 hover:opacity-100 cursor-pointer"
         >
-          Create Post
+          <MessageSquare size={20} /> {param.thread.replies}
         </DialogTrigger>
         <DialogContent className="top-10 translate-y-0 max-w-md w-full p-3">
           <FormProvider {...form}>
@@ -61,10 +77,13 @@ export function PostInputDialog() {
               onSubmit={form.handleSubmit(onSubmit)}
               className="w-full flex flex-col p-4 pt-10 gap-2"
             >
+              <PostMiniPreview thread={param.thread} />
+
               <div className="flex items-start gap-2">
                 <Avatar className="w-10 h-10" />
-                <Typebox maxHeight={300} />
+                <Typebox placeholder="Type your Reply!" maxHeight={300} />
               </div>
+
               <div className="flex pt-3 gap-2 items-center border-t justify-between">
                 <ImageUpload fileInputRef={fileInputRef} />
                 <Button
@@ -72,12 +91,10 @@ export function PostInputDialog() {
                   disabled={!form.formState.isValid}
                   className="rounded-full px-6"
                 >
-                  Post
+                  Reply
                 </Button>
               </div>
-              <ImageUploadPreview<CreateThreadDTO>
-                fileInputRef={fileInputRef}
-              />
+              <ImageUploadPreview<CreateReplyDTO> fileInputRef={fileInputRef} />
             </form>
           </FormProvider>
         </DialogContent>
