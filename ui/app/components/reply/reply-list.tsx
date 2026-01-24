@@ -6,17 +6,19 @@ import {
   selectRepliesStatus,
 } from "~/store/reply";
 import { ReplyListItem } from "./reply-list-item";
+import { selectAuthUser } from "~/store/auth";
 
 export function ReplyList({ threadId }: { threadId: number }) {
   const dispatch = useAppDispatch();
+  const user = useAppSelector(selectAuthUser);
   const replies = useAppSelector(selectAllReplies);
-  const repliesStatus = useAppSelector(selectRepliesStatus);
+  const status = useAppSelector(selectRepliesStatus);
 
   useEffect(() => {
-    if (repliesStatus === "idle") {
+    if (status === "idle" && user) {
       dispatch(fetchReplies(threadId));
     }
-  }, [repliesStatus, dispatch]);
+  }, [dispatch, threadId]);
 
   if (replies.length < 1) {
     return (

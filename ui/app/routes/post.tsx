@@ -1,6 +1,5 @@
 import type { Route } from "./+types/home";
 import { authenticateMiddleware } from "~/middlewares/authenticate";
-import { PostList } from "~/components/post/post-list";
 import { Link, useParams } from "react-router";
 import { useEffect } from "react";
 import { Button } from "~/components/ui/button";
@@ -8,13 +7,15 @@ import { ArrowLeft } from "lucide-react";
 import { SinglePost } from "~/components/post/single-post";
 import {
   fetchThread,
-  selectThreadById,
+  resetThread,
+  selectThread,
   selectThreadStatus,
 } from "~/store/thread";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { useFeed } from "~/layouts/post-layout";
 import { ReplyInput } from "~/components/reply/reply-input";
 import { ReplyList } from "~/components/reply/reply-list";
+import { selectAuthUser } from "~/store/auth";
 
 export const clientMiddleware: Route.ClientMiddlewareFunction[] = [
   authenticateMiddleware,
@@ -24,14 +25,19 @@ export default function Post() {
   let params = useParams();
   const { feedRef } = useFeed();
   const dispatch = useAppDispatch();
-  const thread = useAppSelector(selectThreadById(Number(params.id)));
-  const threadStatus = useAppSelector(selectThreadStatus(Number(params.id)));
+  const user = useAppSelector(selectAuthUser);
+  const thread = useAppSelector(selectThread);
+  const status = useAppSelector(selectThreadStatus);
 
   useEffect(() => {
-    if (threadStatus === "idle") {
+    if (status === "idle" && user) {
       dispatch(fetchThread(Number(params.id)));
     }
-  }, [threadStatus, dispatch, params.id]);
+
+    return () => {
+      dispatch(resetThread());
+    };
+  }, [dispatch, params.id]);
 
   useEffect(() => {
     feedRef.current?.scrollTo({

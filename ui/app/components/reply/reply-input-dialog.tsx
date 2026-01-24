@@ -72,6 +72,12 @@ export function ReplyInputDialog(param: ReplyInputOptions) {
           <MessageSquare size={20} /> {param.thread.replies}
         </DialogTrigger>
         <DialogContent className="top-10 translate-y-0 max-w-md w-full p-3">
+          {/* SUPPRESS WARNING */}
+          <DialogHeader>
+            <DialogTitle></DialogTitle>
+            <DialogDescription></DialogDescription>
+          </DialogHeader>
+
           <FormProvider {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}

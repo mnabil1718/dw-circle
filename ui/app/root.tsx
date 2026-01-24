@@ -46,10 +46,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="dark">
+      <body suppressHydrationWarning className="dark">
         <Provider store={store}>
-          <AuthWatcher>{children}</AuthWatcher>
-          <Toaster duration={4000} />
+          {children}
+          <Toaster duration={5000} />
           <ScrollRestoration />
           <Scripts />
         </Provider>
@@ -59,7 +59,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    // Place auth watcher inside toaster provider
+    // to be able to navigate and show toast message
+    <AuthWatcher>
+      <Outlet />
+    </AuthWatcher>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
@@ -79,7 +85,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   return (
-    <main className="pt-16 p-4 container mx-auto">
+    <main className="pt-16 p-4 container mx-auto bg-background">
       <h1>{message}</h1>
       <p>{details}</p>
       {stack && (

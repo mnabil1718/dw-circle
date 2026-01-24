@@ -1,20 +1,22 @@
-import { createAppAsyncThunk } from "./with-types";
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { logout, selectAuthUser } from "./auth";
 import { type RootState } from "./store";
-import type { CreateReplyActionPayload, Reply } from "~/dto/reply";
-import { getReplies, postReply } from "~/services/reply";
-import type { AddReplyLikeDTO, ToggleReplyLikeResponse } from "~/dto/like";
 import { postLikeReply } from "~/services/like";
+import { createAppAsyncThunk } from "./with-types";
+import { getReplies, postReply } from "~/services/reply";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import type { CreateReplyActionPayload, Reply } from "~/dto/reply";
+import type { AddReplyLikeDTO, ToggleReplyLikeResponse } from "~/dto/like";
+import { resetThread } from "./thread";
 
 export interface ReplyState {
   replies: Reply[];
-  listStatus: "idle" | "pending" | "succeeded" | "failed";
+  status: "idle" | "pending" | "succeeded" | "failed";
   error: string | null;
 }
 
 const initialState: ReplyState = {
   replies: [],
-  listStatus: "idle",
+  status: "idle",
   error: null,
 };
 
@@ -28,8 +30,9 @@ export const fetchReplies = createAppAsyncThunk(
   },
   {
     condition(arg, thunkApi) {
+      const user = selectAuthUser(thunkApi.getState());
       const status = selectRepliesStatus(thunkApi.getState());
-      if (status !== "idle") {
+      if (status !== "idle" || !user) {
         return false;
       }
     },
@@ -91,18 +94,18 @@ const replySlice = createSlice({
   extraReducers(builder) {
     builder
 
-      // ======  GET THREADS =====
+      // ======  GET REPLIES =====
       .addCase(fetchReplies.pending, (state, _) => {
-        state.listStatus = "pending";
+        state.status = "pending";
       })
 
       .addCase(fetchReplies.fulfilled, (state, action) => {
-        state.listStatus = "succeeded";
+        state.status = "succeeded";
         state.replies = action.payload;
       })
 
       .addCase(fetchReplies.rejected, (state, action) => {
-        state.listStatus = "failed";
+        state.status = "failed";
         state.error = action.error.message ?? "Unknown Error";
       })
 
@@ -196,6 +199,14 @@ const replySlice = createSlice({
         }
 
         state.error = action.error.message ?? "Failed to unlike";
+      })
+
+      .addCase(logout, (state) => {
+        return initialState;
+      })
+
+      .addCase(resetThread, (state) => {
+        return initialState;
       });
   },
 });
@@ -207,6 +218,5 @@ export default replySlice.reducer;
 export const selectAllReplies = (state: RootState) => state.replies.replies;
 export const selectRepliesById = (id: number) => (state: RootState) =>
   state.replies.replies.find((r) => r.id === id);
-export const selectRepliesStatus = (state: RootState) =>
-  state.replies.listStatus;
 export const selectRepliesError = (state: RootState) => state.replies.error;
+export const selectRepliesStatus = (state: RootState) => state.replies.status;

@@ -31,9 +31,10 @@ const authSlice = createSlice({
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(action.payload));
     },
     logout(state) {
-      state.user = null;
       if (typeof window !== "undefined")
         localStorage.removeItem(LOCAL_STORAGE_KEY);
+
+      return initialState;
     },
   },
 });

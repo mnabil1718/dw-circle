@@ -1,11 +1,12 @@
 import type { Request, Response } from "express";
 import type { UserModel } from "../generated/prisma/models.js";
-import { checkUserIDExists, createUser, getUserByIdentifier, updateUserProfile, getUserProfile } from "../services/users/queries.js";
+import { checkUserIDExists, createUser, getUserByIdentifier, updateUserProfile, getUserProfile, getUserById } from "../services/users/queries.js";
 import { Hasher } from "../utils/hasher.js";
 import { StatusCodes } from "http-status-codes";
 import { success } from "../utils/response.js";
 import { generateJWT } from "../utils/tokenize.js";
 import type { LoginUserResponse, RegisterUserResponse, UpdateProfile } from "../services/users/types.js";
+import { UserMapper } from "../services/users/map.js";
 
 export const postUsers = async (req: Request, res: Response) => {
 
@@ -50,21 +51,24 @@ export const putUsersProfile = async (req: Request, res: Response) => {
     const { sub } = (req as any).user;
     const userId = Number(sub);
 
-    await checkUserIDExists(userId);
+    const user = await getUserById(userId);
 
     const { name, username, bio } = req.body;
+    const image = req.file;
 
     const data: UpdateProfile = {
         userId,
         name,
         username,
-        bio,
+        bio: bio ?? null,
+        image: image?.filename ?? user.photo_profile,
     };
 
-    const updated = await updateUserProfile(data);
+    const raw = await updateUserProfile(data);
+    const profile = UserMapper.toProfileResponse(raw);
 
     const code = StatusCodes.OK;
-    res.status(code).json(success(code, "Profile berhasil diupdate", updated));
+    res.status(code).json(success(code, "Profile berhasil diupdate", profile));
 }
 
 
@@ -73,7 +77,8 @@ export const getUsersProfile = async (req: Request, res: Response) => {
     const { sub } = (req as any).user;
     const userId = Number(sub);
 
-    const profile = await getUserProfile(userId);
+    const raw = await getUserProfile(userId);
+    const profile = UserMapper.toProfileResponse(raw);
 
     const code = StatusCodes.OK;
     res.status(code).json(success(code, "Profile fetched successfully", profile));

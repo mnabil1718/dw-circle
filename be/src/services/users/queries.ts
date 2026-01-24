@@ -1,4 +1,4 @@
-import { type CreateUser, type UpdateProfile, type UpdateProfileResponse } from "./types.js";
+import { type CreateUser, type RawProfileResponse, type UpdateProfile, type UpdateProfileResponse } from "./types.js";
 import { type UserModel } from "../../generated/prisma/models/User.js"
 import { prisma } from "../../lib/prisma/client.js";
 import { USER_ROLE } from "../../generated/prisma/enums.js";
@@ -32,6 +32,18 @@ export async function getUserByIdentifier(identifier: string): Promise<UserModel
 }
 
 
+export async function getUserById(id: number): Promise<UserModel> {
+    const u = await prisma.user.findFirst({
+        where: {
+            id,
+        },
+    });
+
+    if (!u) throw new NotFoundError("user not found");
+    return u;
+}
+
+
 export async function checkUserIDExists(id: number): Promise<void> {
     const u = await prisma.user.findUnique({
         where: {
@@ -43,8 +55,8 @@ export async function checkUserIDExists(id: number): Promise<void> {
 }
 
 
-export async function updateUserProfile(req: UpdateProfile): Promise<UpdateProfileResponse> {
-    const res = await prisma.user.update({
+export async function updateUserProfile(req: UpdateProfile): Promise<RawProfileResponse> {
+    return await prisma.user.update({
         where: {
             id: req.userId,
         },
@@ -52,6 +64,7 @@ export async function updateUserProfile(req: UpdateProfile): Promise<UpdateProfi
             full_name: req.name,
             username: req.username,
             bio: req.bio ?? null,
+            photo_profile: req.image,
         },
         include: {
             _count: {
@@ -63,19 +76,10 @@ export async function updateUserProfile(req: UpdateProfile): Promise<UpdateProfi
         }
     });
 
-    return {
-        id: res.id,
-        name: res.full_name,
-        username: res.username,
-        bio: res.bio ?? undefined,
-        avatar: res.photo_profile ?? undefined,
-        followers: res._count.followers,
-        following: res._count.following,
-    };
 }
 
 
-export async function getUserProfile(userId: number): Promise<UpdateProfileResponse> {
+export async function getUserProfile(userId: number): Promise<RawProfileResponse> {
     const res = await prisma.user.findUnique({
         where: {
             id: userId,
@@ -92,14 +96,6 @@ export async function getUserProfile(userId: number): Promise<UpdateProfileRespo
 
     if (!res) throw new NotFoundError("User not found");
 
-    return {
-        id: res.id,
-        name: res.full_name,
-        username: res.username,
-        bio: res.bio ?? undefined,
-        avatar: res.photo_profile ?? undefined,
-        followers: res._count.followers,
-        following: res._count.following,
-    };
+    return res;
 }
 

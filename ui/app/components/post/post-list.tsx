@@ -4,16 +4,18 @@ import {
   fetchThreads,
   selectAllThreads,
   selectThreadsStatus,
-} from "~/store/thread";
+} from "~/store/threads";
 import { useEffect } from "react";
+import { selectAuthUser } from "~/store/auth";
 
 export function PostList() {
   const dispatch = useAppDispatch();
+  const user = useAppSelector(selectAuthUser);
   const threads = useAppSelector(selectAllThreads);
   const threadsStatus = useAppSelector(selectThreadsStatus);
 
   useEffect(() => {
-    if (threadsStatus === "idle") {
+    if (threadsStatus === "idle" && user) {
       dispatch(fetchThreads());
     }
   }, [threadsStatus, dispatch]);

@@ -1,7 +1,6 @@
 import type { Route } from "./+types/home";
 import { authenticateMiddleware } from "~/middlewares/authenticate";
 import { PostList } from "~/components/post/post-list";
-import { PostInput } from "~/components/post/post-input";
 import { FeedHeader } from "~/components/post/feed-header";
 
 export const clientMiddleware: Route.ClientMiddlewareFunction[] = [

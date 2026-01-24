@@ -1,7 +1,7 @@
 import { useRef, type ContextType, type RefObject } from "react";
 import { Outlet, useOutletContext } from "react-router";
 import { CreditCard } from "~/components/credit-card";
-import { ProfileCard } from "~/components/profile-card";
+import { ProfileCard } from "~/components/profile/profile-card";
 import { Sidebar } from "~/components/sidebar";
 import { SuggestionCard } from "~/components/suggestion-card";
 
