@@ -12,7 +12,6 @@ export function ImageUploadPreview<T extends FieldValues & HasImageField>({
 }) {
   const form = useFormContext<T>();
 
-  // ✅ Tell TS that "image" is a valid Path<T>
   const image = form.watch("image" as Path<T>) as File | undefined;
 
   const deleteImage = () => {

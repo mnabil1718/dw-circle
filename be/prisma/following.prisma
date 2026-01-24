@@ -1,0 +1,13 @@
+model Following {
+  id           Int      @id @default(autoincrement())
+  following_id Int
+  follower_id  Int
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  follower  User @relation("UserFollowers", fields: [follower_id], references: [id], onDelete: Cascade)
+  following User @relation("UserFollowing", fields: [following_id], references: [id], onDelete: Cascade)
+
+  /// Prevent duplicate follows
+  @@unique([follower_id, following_id])
+}

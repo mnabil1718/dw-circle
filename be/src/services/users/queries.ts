@@ -1,4 +1,4 @@
-import { type CreateUser } from "./types.js";
+import { type CreateUser, type UpdateProfile, type UpdateProfileResponse } from "./types.js";
 import { type UserModel } from "../../generated/prisma/models/User.js"
 import { prisma } from "../../lib/prisma/client.js";
 import { USER_ROLE } from "../../generated/prisma/enums.js";
@@ -40,5 +40,66 @@ export async function checkUserIDExists(id: number): Promise<void> {
     });
 
     if (!u) throw new NotFoundError("User not found");
+}
+
+
+export async function updateUserProfile(req: UpdateProfile): Promise<UpdateProfileResponse> {
+    const res = await prisma.user.update({
+        where: {
+            id: req.userId,
+        },
+        data: {
+            full_name: req.name,
+            username: req.username,
+            bio: req.bio ?? null,
+        },
+        include: {
+            _count: {
+                select: {
+                    followers: true,
+                    following: true,
+                }
+            }
+        }
+    });
+
+    return {
+        id: res.id,
+        name: res.full_name,
+        username: res.username,
+        bio: res.bio ?? undefined,
+        avatar: res.photo_profile ?? undefined,
+        followers: res._count.followers,
+        following: res._count.following,
+    };
+}
+
+
+export async function getUserProfile(userId: number): Promise<UpdateProfileResponse> {
+    const res = await prisma.user.findUnique({
+        where: {
+            id: userId,
+        },
+        include: {
+            _count: {
+                select: {
+                    followers: true,
+                    following: true,
+                }
+            }
+        }
+    });
+
+    if (!res) throw new NotFoundError("User not found");
+
+    return {
+        id: res.id,
+        name: res.full_name,
+        username: res.username,
+        bio: res.bio ?? undefined,
+        avatar: res.photo_profile ?? undefined,
+        followers: res._count.followers,
+        following: res._count.following,
+    };
 }
 

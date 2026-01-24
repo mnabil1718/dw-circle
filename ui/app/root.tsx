@@ -14,6 +14,7 @@ import { store } from "./store/store";
 import { useEffect } from "react";
 import { initSockets } from "./sockets/init";
 import { socket } from "./lib/socket";
+import { AuthWatcher } from "./components/auth/auth-watch";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -47,7 +48,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body className="dark">
         <Provider store={store}>
-          {children}
+          <AuthWatcher>{children}</AuthWatcher>
           <Toaster duration={4000} />
           <ScrollRestoration />
           <Scripts />

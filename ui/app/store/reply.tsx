@@ -106,22 +106,6 @@ const replySlice = createSlice({
         state.error = action.error.message ?? "Unknown Error";
       })
 
-      // ======  GET SINGLE THREAD =====
-      //   .addCase(fetchThread.pending, (state, action) => {
-      //     state.threadStatus[action.meta.arg] = "pending";
-      //   })
-
-      //   .addCase(fetchThread.fulfilled, (state, action) => {
-      //     const t = action.payload;
-      //     state.thread[t.id] = t;
-      //     state.threadStatus[t.id] = "succeeded";
-      //   })
-
-      //   .addCase(fetchThread.rejected, (state, action) => {
-      //     state.threadStatus[action.meta.arg] = "failed";
-      //     state.error = action.error.message ?? "Unknown Error";
-      //   })
-
       // ======  CREATE REPLY =====
       .addCase(createReply.pending, (state, action) => {
         const user = action.meta.arg.user;

@@ -21,6 +21,7 @@ export const RegisterUserSchema = z.object({
     password: passwordSchema,
 });
 
+
 export type CreateUser = z.infer<typeof RegisterUserSchema>;
 
 export type RegisterUserResponse = {
@@ -40,3 +41,22 @@ export type LoginUserResponse = {
 }
 
 
+export const UpdateProfileSchema = z.object({
+    name: z.string().min(1),
+    username: z.string().min(1),
+    bio: z.string().max(200).optional(),
+});
+
+export type UpdateProfile = z.infer<typeof UpdateProfileSchema> & {
+    userId: number;
+};
+
+export type UpdateProfileResponse = {
+    id: number;
+    name: string;
+    username: string;
+    avatar: string | undefined;
+    bio: string | undefined;
+    following: number;
+    followers: number;
+}

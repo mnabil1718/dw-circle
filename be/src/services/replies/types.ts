@@ -29,7 +29,7 @@ export type ThreadMetadata = {
     replies: number;
 };
 
-export type CreateResponse = {
+export type CreateReplyResponse = {
     raw: RawCreateReplyResponse;
     thread: ThreadMetadata;
 };

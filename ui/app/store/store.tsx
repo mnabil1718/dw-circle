@@ -6,12 +6,14 @@ import {
 import authReducer from "./auth";
 import threadReducer from "./thread";
 import replyReducer from "./reply";
+import profileReducer from "./profile";
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     threads: threadReducer,
     replies: replyReducer,
+    profile: profileReducer,
   },
 });
 

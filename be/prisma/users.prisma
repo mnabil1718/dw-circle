@@ -29,6 +29,9 @@ model User {
   likes        Like[]
   createdLikes Like[] @relation("LikeCreator")
   updatedLikes Like[] @relation("LikeUpdator")
+
+  followers Following[] @relation("UserFollowing")
+  following Following[] @relation("UserFollowers")
 }
 
 enum USER_ROLE {

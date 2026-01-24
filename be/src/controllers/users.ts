@@ -1,11 +1,11 @@
 import type { Request, Response } from "express";
 import type { UserModel } from "../generated/prisma/models.js";
-import { createUser, getUserByIdentifier } from "../services/users/queries.js";
+import { checkUserIDExists, createUser, getUserByIdentifier, updateUserProfile, getUserProfile } from "../services/users/queries.js";
 import { Hasher } from "../utils/hasher.js";
 import { StatusCodes } from "http-status-codes";
 import { success } from "../utils/response.js";
 import { generateJWT } from "../utils/tokenize.js";
-import type { LoginUserResponse, RegisterUserResponse } from "../services/users/types.js";
+import type { LoginUserResponse, RegisterUserResponse, UpdateProfile } from "../services/users/types.js";
 
 export const postUsers = async (req: Request, res: Response) => {
 
@@ -42,3 +42,40 @@ export const postLogin = async (req: Request, res: Response) => {
 
     res.status(code).json(success(code, "Login successful", response));
 }
+
+
+
+export const putUsersProfile = async (req: Request, res: Response) => {
+
+    const { sub } = (req as any).user;
+    const userId = Number(sub);
+
+    await checkUserIDExists(userId);
+
+    const { name, username, bio } = req.body;
+
+    const data: UpdateProfile = {
+        userId,
+        name,
+        username,
+        bio,
+    };
+
+    const updated = await updateUserProfile(data);
+
+    const code = StatusCodes.OK;
+    res.status(code).json(success(code, "Profile berhasil diupdate", updated));
+}
+
+
+export const getUsersProfile = async (req: Request, res: Response) => {
+
+    const { sub } = (req as any).user;
+    const userId = Number(sub);
+
+    const profile = await getUserProfile(userId);
+
+    const code = StatusCodes.OK;
+    res.status(code).json(success(code, "Profile fetched successfully", profile));
+}
+
