@@ -14,7 +14,8 @@
     "db:migrate": "npx prisma migrate",
     "db:generate": "npx prisma generate",
     "lint:fix": "npx eslint . --fix",
-    "lint": "npx eslint ."
+    "lint": "npx eslint .",
+    "purge:uploads": "rm -rf src/public/uploads"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.2.0",

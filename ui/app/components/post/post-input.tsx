@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ImageUpload } from "../image-upload";
 import { ImageUploadPreview } from "../image-upload-preview";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
-import { createThread } from "~/store/thread";
+import { createThread } from "~/store/threads";
 import { selectAuthUser } from "~/store/auth";
 import { useRef } from "react";
 

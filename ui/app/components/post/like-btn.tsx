@@ -4,11 +4,8 @@ import type { AddLikeDTO } from "~/dto/like";
 import type { Thread } from "~/dto/thread";
 import { selectAuthUser } from "~/store/auth";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
-import {
-  createLikeThread,
-  deleteLikeThread,
-  selectThreadsById,
-} from "~/store/thread";
+import { createLikeThread, deleteLikeThread } from "~/store/thread";
+import { selectThreadsById } from "~/store/threads";
 
 export function LikeBtn({ thread }: { thread: Thread }) {
   const user = useAppSelector(selectAuthUser);

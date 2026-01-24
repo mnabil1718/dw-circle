@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ImageUpload } from "../image-upload";
 import { ImageUploadPreview } from "../image-upload-preview";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
-import { createThread } from "~/store/thread";
+import { createThread } from "~/store/threads";
 import { selectAuthUser } from "~/store/auth";
 
 import {
@@ -37,7 +37,7 @@ export function PostInputDialog() {
   });
 
   async function onSubmit(values: CreateThreadDTO) {
-    dispatch(createThread({ req: values, user })).unwrap();
+    dispatch(createThread({ req: values, user }));
     form.reset();
     setOpen(false);
   }
@@ -56,6 +56,11 @@ export function PostInputDialog() {
           Create Post
         </DialogTrigger>
         <DialogContent className="top-10 translate-y-0 max-w-md w-full p-3">
+          {/* SUPPRESS WARNING */}
+          <DialogHeader>
+            <DialogTitle></DialogTitle>
+            <DialogDescription></DialogDescription>
+          </DialogHeader>
           <FormProvider {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}

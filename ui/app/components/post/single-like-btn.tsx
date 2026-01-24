@@ -7,13 +7,13 @@ import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import {
   createLikeThread,
   deleteLikeThread,
-  selectThreadById,
+  selectThread,
 } from "~/store/thread";
 
 export function SingleLikeBtn({ thread }: { thread: Thread }) {
   const user = useAppSelector(selectAuthUser);
   const dispatch = useAppDispatch();
-  const thr = useAppSelector(selectThreadById(thread.id));
+  const thr = useAppSelector(selectThread);
 
   const likeHandler = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();

@@ -44,8 +44,6 @@ export function EditableAvatar({
       shouldValidate: true,
       shouldDirty: true,
     });
-
-    toastSuccess("Profile picture changed");
   };
 
   const deleteImage = () => {

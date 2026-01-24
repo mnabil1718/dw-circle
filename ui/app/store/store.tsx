@@ -4,6 +4,7 @@ import {
   type ThunkAction,
 } from "@reduxjs/toolkit";
 import authReducer from "./auth";
+import threadsReducer from "./threads";
 import threadReducer from "./thread";
 import replyReducer from "./reply";
 import profileReducer from "./profile";
@@ -11,7 +12,8 @@ import profileReducer from "./profile";
 export const store = configureStore({
   reducer: {
     auth: authReducer,
-    threads: threadReducer,
+    threads: threadsReducer,
+    thread: threadReducer,
     replies: replyReducer,
     profile: profileReducer,
   },

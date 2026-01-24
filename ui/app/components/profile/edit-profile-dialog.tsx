@@ -10,20 +10,20 @@ import {
   DialogHeader,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { useRef, useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 
 import {
   UpdateProfileSchema,
   type UpdateProfileSchemaType,
 } from "~/dto/profile";
 import { selectProfile, updateProfile } from "~/store/profile";
-import { Button } from "./ui/button";
-import { CoverImage } from "./cover-image";
+import { Button } from "../ui/button";
+import { CoverImage } from "../cover-image";
 import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
-import { Avatar } from "./avatar";
-import { EditableAvatar } from "./editable-avatar";
-import { FormControl, FormField, FormItem, FormMessage } from "./ui/form";
-import { Input } from "./ui/input";
+import { Avatar } from "../avatar";
+import { EditableAvatar } from "../editable-avatar";
+import { FormControl, FormField, FormItem, FormMessage } from "../ui/form";
+import { Input } from "../ui/input";
 
 export function EditProfileDialog() {
   const [open, setOpen] = useState<boolean>(false);
@@ -34,8 +34,7 @@ export function EditProfileDialog() {
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  console.log(profile);
-
+  // initially will always be empty
   const form = useForm<UpdateProfileSchemaType>({
     resolver: zodResolver(UpdateProfileSchema),
     mode: "onChange",
@@ -45,6 +44,17 @@ export function EditProfileDialog() {
       bio: profile?.bio,
     },
   });
+
+  //   update after profile/fetchProfile fulfilled
+  useEffect(() => {
+    if (profile) {
+      form.reset({
+        name: profile.name,
+        username: profile.username,
+        bio: profile.bio,
+      });
+    }
+  }, [profile]);
 
   async function onSubmit(values: UpdateProfileSchemaType) {
     dispatch(
@@ -74,13 +84,15 @@ export function EditProfileDialog() {
         >
           Edit Profile
         </DialogTrigger>
-        <DialogContent className="top-10 translate-y-0 max-w-md w-full p-5">
+        <DialogContent
+          className="top-10 translate-y-0 max-w-md w-full p-5"
+          onOpenAutoFocus={(e) => e.preventDefault()}
+        >
           <DialogHeader>
             <DialogTitle className="font-medium">Edit profile</DialogTitle>
+            {/* SUPPRESS WARNING */}
+            <DialogDescription></DialogDescription>
           </DialogHeader>
-
-          {/* SUPPRESS WARNING */}
-          <DialogDescription></DialogDescription>
 
           <FormProvider {...form}>
             <form
@@ -88,7 +100,11 @@ export function EditProfileDialog() {
               className="w-full flex flex-col gap-2"
             >
               <CoverImage />
-              <EditableAvatar className="w-20 h-20 -mt-10 ml-2 border-4 border-card mb-2" />
+              <EditableAvatar
+                image={profile?.avatar}
+                alt={profile?.name}
+                className="w-20 h-20 -mt-10 ml-2 border-4 border-card mb-2"
+              />
 
               <FormField
                 control={form.control}
@@ -127,7 +143,7 @@ export function EditProfileDialog() {
                       <Textarea
                         placeholder="Write Bio"
                         rows={6}
-                        className="resize-none overflow-y-auto scrollbar-minimal"
+                        className="resize-none max-h-16 overflow-y-auto scrollbar-minimal"
                         {...field}
                       />
                     </FormControl>
@@ -137,7 +153,7 @@ export function EditProfileDialog() {
                 )}
               />
 
-              <div className="flex pt-3 gap-2 items-center border-t justify-between">
+              <div className="flex pt-3 gap-2 items-center border-t justify-end">
                 <Button
                   type="submit"
                   disabled={!form.formState.isValid}

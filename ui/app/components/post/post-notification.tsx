@@ -1,7 +1,7 @@
 import { ArrowUp } from "lucide-react";
 import { useScrolled } from "~/hooks/use-scrolled";
 import { useEffect, useRef, useState } from "react";
-import { selectAllThreads } from "~/store/thread";
+import { selectAllThreads } from "~/store/threads";
 import { useAppSelector } from "~/store/hooks";
 import { useFeed } from "~/layouts/post-layout";
 

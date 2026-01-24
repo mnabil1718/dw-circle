@@ -6,7 +6,8 @@ import { socket } from "~/lib/socket";
 import { selectAuthUser } from "~/store/auth";
 import { replyCreated, replyLikeToggled } from "~/store/reply";
 import { store } from "~/store/store";
-import { threadLikeToggled, threadCreated, threadReplyCreated } from "~/store/thread";
+import { threadLikeToggled } from "~/store/thread";
+import { threadCreated, threadReplyCreated } from "~/store/threads";
 import { toastSuccess } from "~/utils/toast";
 
 export function initSockets() {

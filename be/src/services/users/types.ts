@@ -1,5 +1,5 @@
-import { USER_ROLE } from "../../generated/prisma/enums.js";
 import z from "zod";
+import type { UserGetPayload } from "../../generated/prisma/models.js";
 
 export const passwordSchema = z
     .string()
@@ -49,7 +49,21 @@ export const UpdateProfileSchema = z.object({
 
 export type UpdateProfile = z.infer<typeof UpdateProfileSchema> & {
     userId: number;
+    image: string | null;
 };
+
+
+export type RawProfileResponse = UserGetPayload<{
+    include: {
+        _count: {
+            select: {
+                followers: true;
+                following: true;
+            };
+        };
+    };
+}
+>;
 
 export type UpdateProfileResponse = {
     id: number;

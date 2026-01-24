@@ -13,7 +13,7 @@ export const generateJWT = async (payload: JwtPayload): Promise<string> => {
     return await new SignJWT(payload)
         .setProtectedHeader({ alg: 'HS256' })
         .setIssuedAt()
-        .setExpirationTime('30s')
+        .setExpirationTime('1m')
         .sign(JWT_SECRET);
 }
 
