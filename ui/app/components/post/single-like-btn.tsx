@@ -33,7 +33,6 @@ export function SingleLikeBtn({ thread }: { thread: Thread }) {
   return (
     <button
       onClick={likeHandler}
-      disabled={user?.user_id === thr?.user.id}
       className="flex items-center gap-1.5 opacity-70 hover:opacity-100 cursor-pointer disabled:hover:opacity-70"
     >
       {thr?.isLiked ? <Heart size={20} fill="white" /> : <Heart size={20} />}{" "}
