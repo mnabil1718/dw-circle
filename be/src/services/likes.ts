@@ -1,5 +1,5 @@
-import { prisma } from "../../lib/prisma/client.js";
-import type { ToggleLikeResponse, ToggleReplyLikeResponse } from "./types.js";
+import { prisma } from "../lib/prisma/client.js";
+import type { ToggleLikeResponse, ToggleReplyLikeResponse } from "../types/likes.js";
 
 export async function createThreadLike(userId: number, threadId: number): Promise<ToggleLikeResponse> {
     const [_, likes] = await prisma.$transaction([

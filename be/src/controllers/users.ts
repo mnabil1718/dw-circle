@@ -1,13 +1,15 @@
 import type { Request, Response } from "express";
 import type { UserModel } from "../generated/prisma/models.js";
-import { checkUserIDExists, createUser, getUserByIdentifier, updateUserProfile, getUserProfile, getUserById } from "../services/users/queries.js";
+import { createUser, getUserByIdentifier, updateUserProfile, getUserProfile, getUserById, checkUserIDExists, getFollowingByUserId, getFollowersByUserId, follow, unfollow, checkIsFollowed, suggestUsersToFollow } from "../services/users.js";
 import { Hasher } from "../utils/hasher.js";
 import { StatusCodes } from "http-status-codes";
 import { success } from "../utils/response.js";
 import { generateJWT } from "../utils/tokenize.js";
-import type { LoginUserResponse, RegisterUserResponse, UpdateProfile } from "../services/users/types.js";
-import { UserMapper } from "../services/users/map.js";
+import { GetUserFollowsSchema, type FollowToggledSocketPayload, type FollowToggledSocketType, type GetUserFollowsType, type LoginUserResponse, type RawFollowToggleResponse, type RegisterUserResponse, type ToggleFollowResponse, type UpdateProfile } from "../types/users.js";
+import { UserMapper } from "../mappers/users.js";
 import { STATIC_UPLOAD_PREFIX } from "../constants/upload.js";
+import { getSocketServer } from "../sockets/server.js";
+import { FOLLOW_TOGGLED_EVENT } from "../constants/events.js";
 
 export const postUsers = async (req: Request, res: Response) => {
 
@@ -86,3 +88,74 @@ export const getUsersProfile = async (req: Request, res: Response) => {
     res.status(code).json(success(code, "Profile fetched successfully", profile));
 }
 
+
+export const getUsersFollows = async (req: Request, res: Response) => {
+    const { sub } = (req as any).user;
+    const userId = Number(sub);
+
+    await checkUserIDExists(userId);
+    const query: GetUserFollowsType = GetUserFollowsSchema.parse(req.query);
+
+    if (query.type === "following") {
+        let result = await getFollowingByUserId(userId);
+        const following = UserMapper.toFollowingResponses(result);
+        return res.status(StatusCodes.OK).json(success(StatusCodes.OK, "Following fetched successfully", following));
+    }
+
+    // followers
+    let result = await getFollowersByUserId(userId);
+    const followers = UserMapper.toFollowerResponses(result);
+    return res.status(StatusCodes.OK).json(success(StatusCodes.OK, "Followers fetched successfully", followers));
+}
+
+
+export const postUsersFollow = async (req: Request, res: Response) => {
+    const { sub } = (req as any).user;
+    const userId = Number(sub);
+
+    await checkUserIDExists(userId);
+
+    const { following_id } = req.body;
+    const followingId = Number(following_id);
+
+    const exists = await checkIsFollowed(followingId, userId);
+
+    let raw: RawFollowToggleResponse;
+    let type: FollowToggledSocketType = "unfollow";
+    if (exists) {
+        raw = await unfollow(followingId, userId);
+    } else {
+        raw = await follow(followingId, userId);
+        type = "follow";
+    }
+
+    const profileData = await getUserProfile(userId);
+    const result = UserMapper.toToggleResponse(raw);
+    const socketPayload: FollowToggledSocketPayload = {
+        type,
+        result,
+        metadata: {
+            user_id: profileData.id,
+            following: profileData._count.following,
+            followers: profileData._count.followers,
+        },
+    }
+    getSocketServer().emit(FOLLOW_TOGGLED_EVENT, socketPayload);
+
+
+    const code = StatusCodes.CREATED;
+    res.status(code).json(success(code, "Toggle follow successfully", result));
+}
+
+export const getUsersSuggestions = async (req: Request, res: Response) => {
+    const { sub } = (req as any).user;
+    const userId = Number(sub);
+
+    await checkUserIDExists(userId);
+
+    const raw = await suggestUsersToFollow(userId, 5);
+    const result = UserMapper.toSuggestionFollowerResponses(raw);
+
+    const code = StatusCodes.CREATED;
+    res.status(code).json(success(code, "suggestion fetched successfully", result));
+}

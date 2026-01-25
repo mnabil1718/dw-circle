@@ -1,14 +1,14 @@
 import type { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { success } from "../utils/response.js";
-import { checkUserIDExists } from "../services/users/queries.js";
+import { checkUserIDExists } from "../services/users.js";
 import { AuthorizationError } from "../utils/errors.js";
-import { checkThreadIDExists } from "../services/threads/queries.js";
+import { checkThreadIDExists } from "../services/threads.js";
 import { getSocketServer } from "../sockets/server.js";
-import type { ToggleLikeResponse, ToggleReplyLikeResponse } from "../services/likes/types.js";
+import type { ToggleLikeResponse, ToggleReplyLikeResponse } from "../types/likes.js";
 import { LIKE_REPLY_TOGGLED_EVENT, LIKE_THREAD_TOGGLED_EVENT } from "../constants/events.js";
-import { checkReplyLikeExists, checkThreadLikeExists, createReplyLike, createThreadLike, deleteReplyLike, deleteThreadLike } from "../services/likes/queries.js";
-import { checkReplyIDExists } from "../services/replies/queries.js";
+import { checkReplyLikeExists, checkThreadLikeExists, createReplyLike, createThreadLike, deleteReplyLike, deleteThreadLike } from "../services/likes.js";
+import { checkReplyIDExists } from "../services/replies.js";
 
 export const postThreadLikes = async (req: Request, res: Response) => {
     const { sub } = (req as any).user;

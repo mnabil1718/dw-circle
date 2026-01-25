@@ -8,8 +8,8 @@ import { createLikeThread, deleteLikeThread } from "~/store/thread";
 import { selectThreadsById } from "~/store/threads";
 
 export function LikeBtn({ thread }: { thread: Thread }) {
-  const user = useAppSelector(selectAuthUser);
   const dispatch = useAppDispatch();
+  const user = useAppSelector(selectAuthUser);
   const thr = useAppSelector(selectThreadsById(thread.id));
 
   const likeHandler = (e: MouseEvent<HTMLButtonElement>) => {

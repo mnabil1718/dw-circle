@@ -1,5 +1,5 @@
-import { STATIC_UPLOAD_PREFIX } from "../../constants/upload.js";
-import type { RawCreateReplyResponse, RawReplyResponse, ReplyResponse } from "./types.js";
+import { STATIC_UPLOAD_PREFIX } from "../constants/upload.js";
+import type { RawCreateReplyResponse, RawReplyResponse, ReplyResponse } from "../types/replies.js";
 
 export class ReplyMapper {
     static createToResponse(raw: RawCreateReplyResponse): ReplyResponse {

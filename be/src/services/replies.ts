@@ -1,8 +1,7 @@
-import { threadId } from "node:worker_threads";
-import { prisma } from "../../lib/prisma/client.js";
-import { NotFoundError } from "../../utils/errors.js";
-import { buildFilterQuery, type FilterType } from "../../utils/filters.js";
-import type { CreateReply, CreateReplyResponse, RawReplyResponse } from "./types.js";
+import { prisma } from "../lib/prisma/client.js";
+import { NotFoundError } from "../utils/errors.js";
+import { buildFilterQuery, type FilterType } from "../utils/filters.js";
+import type { CreateReply, CreateReplyResponse, RawReplyResponse } from "../types/replies.js";
 
 export async function createReply(req: CreateReply): Promise<CreateReplyResponse> {
 

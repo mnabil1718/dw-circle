@@ -6,6 +6,7 @@ export default [
     route("/register", "routes/register.tsx"),
     layout("layouts/post-layout.tsx", [
     route("/home", "routes/home.tsx"),
+    route("/follow", "routes/follow.tsx"),
     route("/posts/:id", "routes/post.tsx"),
   ]),
 ] satisfies RouteConfig;

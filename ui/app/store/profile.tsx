@@ -5,6 +5,7 @@ import type { UpdateProfileDTO, UserProfile } from "~/dto/profile";
 import { createAppAsyncThunk } from "./with-types";
 import { getUserProfile, putUserProfile } from "~/services/profile";
 import { login, logout, selectAuthUser } from "./auth";
+import type { FollowToggledSocketPayload } from "~/dto/follow";
 
 export interface ProfileState {
   profile: UserProfile | null;
@@ -48,7 +49,19 @@ export const updateProfile = createAppAsyncThunk(
 const profileSlice = createSlice({
   name: "profile",
   initialState,
-  reducers: {},
+  reducers: {
+    followToggled(state, action: PayloadAction<FollowToggledSocketPayload>) {
+      const { metadata, result } = action.payload;
+
+      if (
+        state.profile?.id === result.follower_id ||
+        state.profile?.id === result.following_id
+      ) {
+        state.profile.followers = metadata.followers;
+        state.profile.following = metadata.following;
+      }
+    },
+  },
   extraReducers(builder) {
     builder
 
@@ -102,8 +115,9 @@ const profileSlice = createSlice({
   },
 });
 
-export const {} = profileSlice.actions;
+export const { followToggled } = profileSlice.actions;
 export default profileSlice.reducer;
 
+// ===========  SELECT   ===========
 export const selectProfile = (state: RootState) => state.profile.profile;
 export const selectProfileStatus = (state: RootState) => state.profile.status;

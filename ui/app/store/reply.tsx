@@ -214,7 +214,7 @@ const replySlice = createSlice({
 export const { replyLikeToggled, replyCreated } = replySlice.actions;
 export default replySlice.reducer;
 
-// ======== THREADS =========
+// ======== SELECT =========
 export const selectAllReplies = (state: RootState) => state.replies.replies;
 export const selectRepliesById = (id: number) => (state: RootState) =>
   state.replies.replies.find((r) => r.id === id);

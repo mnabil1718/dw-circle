@@ -1,5 +1,5 @@
-import { STATIC_UPLOAD_PREFIX } from "../../constants/upload.js";
-import type { RawCreateThreadResponse, RawThreadResponse, ThreadResponse } from "./types.js";
+import { STATIC_UPLOAD_PREFIX } from "../constants/upload.js";
+import type { RawCreateThreadResponse, RawThreadResponse, ThreadResponse } from "../types/threads.js";
 
 export class ThreadMapper {
     static createToResponse(raw: RawCreateThreadResponse): ThreadResponse {

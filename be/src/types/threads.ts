@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { ThreadGetPayload } from "../../generated/prisma/models.js";
+import type { ThreadGetPayload } from "../generated/prisma/models.js";
 
 export const CreateThreadSchema = z.object({
     content: z.string().min(1).max(300),
