@@ -4,7 +4,7 @@ import type { RootState } from "./store";
 import type { UpdateProfileDTO, UserProfile } from "~/dto/profile";
 import { createAppAsyncThunk } from "./with-types";
 import { getUserProfile, putUserProfile } from "~/services/profile";
-import { logout, selectAuthUser } from "./auth";
+import { login, logout, selectAuthUser } from "./auth";
 
 export interface ProfileState {
   profile: UserProfile | null;
@@ -69,23 +69,22 @@ const profileSlice = createSlice({
 
       // ======  UPDATE PROFILE =====
       .addCase(updateProfile.pending, (state, action) => {
-        state.profile = {
-          id: -1,
-          username: action.meta.arg.username,
-          name: action.meta.arg.name,
-          bio: action.meta.arg.bio,
-          avatar: action.meta.arg.image
-            ? URL.createObjectURL(action.meta.arg.image)
-            : state.profile?.avatar,
-          followers: 0,
-          following: 0,
-        };
+        // state.profile = {
+        //   id: -1,
+        //   username: action.meta.arg.username,
+        //   name: action.meta.arg.name,
+        //   bio: action.meta.arg.bio,
+        //   avatar: action.meta.arg.image
+        //     ? URL.createObjectURL(action.meta.arg.image)
+        //     : state.profile?.avatar,
+        //   followers: 0,
+        //   following: 0,
+        // };
 
         state.error = null;
       })
 
       .addCase(updateProfile.fulfilled, (state, action) => {
-        state.status = "succeeded";
         if (state.profile?.avatar) {
           URL.revokeObjectURL(state.profile.avatar);
         }
@@ -94,11 +93,10 @@ const profileSlice = createSlice({
       })
 
       .addCase(updateProfile.rejected, (state, action) => {
-        state.status = "failed";
         state.error = action.error.message ?? "Failed to uodate profile";
       })
 
-      .addCase(logout, (state) => {
+      .addCase(login, (state) => {
         return initialState;
       });
   },

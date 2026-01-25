@@ -12,7 +12,10 @@ type PostListItemProps = {
 export function ReplyListItem({ reply }: PostListItemProps) {
   return (
     <li className="px-5 py-7 w-full flex items-start gap-5">
-      <Avatar className="w-10 h-10 flex-none" />
+      <Avatar
+        image={reply.user.profile_picture}
+        className="w-10 h-10 flex-none"
+      />
       <div className="flex flex-col gap-2">
         <div className="text-sm flex items-center gap-2">
           <h2 className="font-medium">{reply.user.name}</h2>

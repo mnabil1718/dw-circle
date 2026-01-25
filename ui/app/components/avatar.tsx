@@ -10,13 +10,10 @@ export function Avatar({
   alt?: string;
 }) {
   return (
-    <div
-      className={cn(
-        className,
-        "relative rounded-full overflow-hidden bg-foreground",
-      )}
-    >
-      <img src={image} alt={alt} className="w-full h-full object-cover" />
+    <div className={cn(className, "relative rounded-full")}>
+      <div className="rounded-full w-full h-full overflow-hidden">
+        <img src={image} alt={alt} className="w-full h-full object-cover" />
+      </div>
     </div>
   );
 }

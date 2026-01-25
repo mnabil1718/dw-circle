@@ -1,13 +1,14 @@
 import type { Thread } from "~/dto/thread";
 import { createAppAsyncThunk } from "./with-types";
 import { getThreadById } from "~/services/thread";
-import { logout, selectAuthUser } from "./auth";
+import { login, logout, selectAuthUser } from "./auth";
 import type { RootState } from "./store";
 import type { AddLikeDTO, ToggleLikeResponse } from "~/dto/like";
 import { postLikeThread } from "~/services/like";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { threadReplyCreated } from "./threads";
 import type { ReplyThreadMetadata } from "~/dto/reply";
+import { updateProfile } from "./profile";
 
 export interface ThreadState {
   thread: Thread | null;
@@ -151,7 +152,7 @@ const threadSlice = createSlice({
         state.error = action.error.message ?? "Failed to unlike";
       })
 
-      .addCase(logout, (state) => {
+      .addCase(login, (state) => {
         return initialState;
       })
 
@@ -166,7 +167,16 @@ const threadSlice = createSlice({
             t.replies = replies;
           }
         },
-      );
+      )
+
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        const { id, name, username, avatar } = action.payload;
+        if (state.thread && state.thread.user.id === id) {
+          state.thread.user.name = name;
+          state.thread.user.username = username;
+          if (avatar) state.thread.user.profile_picture = avatar;
+        }
+      });
   },
 });
 

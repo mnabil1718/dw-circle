@@ -6,7 +6,10 @@ export function PostMiniPreview({ thread }: { thread: Thread }) {
   return (
     <div className="relative flex items-start gap-4">
       <div className="absolute h-full w-5 border-r-2"></div>
-      <Avatar className="w-10 h-10 flex-none" />
+      <Avatar
+        image={thread.user.profile_picture}
+        className="w-10 h-10 flex-none"
+      />
       <div className="flex flex-col gap-2">
         <div className="text-sm flex items-center gap-2">
           <h2 className="font-medium">{thread.user.name}</h2>

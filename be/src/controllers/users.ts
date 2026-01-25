@@ -7,6 +7,7 @@ import { success } from "../utils/response.js";
 import { generateJWT } from "../utils/tokenize.js";
 import type { LoginUserResponse, RegisterUserResponse, UpdateProfile } from "../services/users/types.js";
 import { UserMapper } from "../services/users/map.js";
+import { STATIC_UPLOAD_PREFIX } from "../constants/upload.js";
 
 export const postUsers = async (req: Request, res: Response) => {
 
@@ -37,6 +38,7 @@ export const postLogin = async (req: Request, res: Response) => {
         name: u.full_name,
         username: u.username,
         token: accessToken,
+        avatar: u.photo_profile ? `${STATIC_UPLOAD_PREFIX}${u.photo_profile}` : undefined,
     };
 
     const code = StatusCodes.OK;

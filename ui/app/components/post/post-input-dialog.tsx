@@ -67,7 +67,7 @@ export function PostInputDialog() {
               className="w-full flex flex-col p-4 pt-10 gap-2"
             >
               <div className="flex items-start gap-2">
-                <Avatar className="w-10 h-10" />
+                <Avatar image={user?.avatar} className="w-10 h-10" />
                 <Typebox maxHeight={300} />
               </div>
               <div className="flex pt-3 gap-2 items-center border-t justify-between">

@@ -15,7 +15,10 @@ export function SinglePost({ thread }: SinglePostProps) {
       <div className="flex flex-col gap-5">
         {/* Profile */}
         <div className="flex items-center gap-4">
-          <Avatar className="w-10 h-10 flex-none" />
+          <Avatar
+            image={thread.user.profile_picture}
+            className="w-10 h-10 flex-none"
+          />
           <div className="text-sm gap-2">
             <h2 className="font-medium">{thread.user.name}</h2>
             <span className="text-sm text-muted-foreground">

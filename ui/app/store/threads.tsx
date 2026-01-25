@@ -5,12 +5,13 @@ import { type RootState } from "./store";
 import { getThreads, postThreads } from "~/services/thread";
 import type { ToggleLikeResponse } from "~/dto/like";
 import type { ReplyThreadMetadata } from "~/dto/reply";
-import { logout, selectAuthUser } from "./auth";
+import { login, logout, selectAuthUser } from "./auth";
 import {
   createLikeThread,
   deleteLikeThread,
   threadLikeToggled,
 } from "./thread";
+import { updateProfile } from "./profile";
 
 // ===== STATES ============
 
@@ -200,7 +201,7 @@ const threadsSlice = createSlice({
         state.error = action.error.message ?? "Failed to unlike";
       })
 
-      .addCase(logout, (state) => {
+      .addCase(login, (state) => {
         return initialState;
       })
 
@@ -215,7 +216,17 @@ const threadsSlice = createSlice({
           t.optimistic = false;
           t.likes = action.payload.likes;
         },
-      );
+      )
+
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        const { id, avatar } = action.payload;
+
+        state.threads.forEach((t) => {
+          if (t.user.id === id) {
+            t.user.profile_picture = avatar;
+          }
+        });
+      });
   },
 });
 
