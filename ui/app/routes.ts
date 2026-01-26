@@ -7,6 +7,7 @@ export default [
     layout("layouts/post-layout.tsx", [
     route("/home", "routes/home.tsx"),
     route("/follow", "routes/follow.tsx"),
+    route("/search", "routes/search.tsx"),
     route("/posts/:id", "routes/post.tsx"),
   ]),
 ] satisfies RouteConfig;

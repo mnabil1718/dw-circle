@@ -210,3 +210,17 @@ export type RawUnfollowResponse = {
         },
     }>;
 }
+
+export type RawSearchUserResponse = UserGetPayload<{
+    include: {
+        followers: true,
+    },
+}>;
+
+
+export const SearchUserFilterSchema = z.object({
+    keyword: z.string().optional(),
+});
+
+export type SearchUserFilter = z.infer<typeof SearchUserFilterSchema>;
+

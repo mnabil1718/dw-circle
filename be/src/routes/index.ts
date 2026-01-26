@@ -4,6 +4,7 @@ import threadRoutes from "./thread.js";
 import likeRoutes from "./like.js";
 import userRoutes from "./user.js";
 import followRoutes from "./follow.js";
+import searchRoutes from "./search.js";
 
 const router = Router();
 
@@ -12,4 +13,5 @@ router.use("/threads", threadRoutes);
 router.use("/likes", likeRoutes);
 router.use("/users", userRoutes);
 router.use("/follows", followRoutes);
+router.use("/search", searchRoutes);
 export default router;

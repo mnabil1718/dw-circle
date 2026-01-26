@@ -9,6 +9,7 @@ import threadReducer from "./thread";
 import replyReducer from "./reply";
 import profileReducer from "./profile";
 import followsReducer from "./follow";
+import searchReducer from "./search";
 
 export const store = configureStore({
   reducer: {
@@ -18,6 +19,7 @@ export const store = configureStore({
     replies: replyReducer,
     profile: profileReducer,
     follows: followsReducer,
+    search: searchReducer,
   },
 });
 

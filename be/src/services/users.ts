@@ -1,4 +1,4 @@
-import { type CreateUser, type FollowResponse, type RawFollowersResponse, type RawFollowingResponse, type RawFollowToggleResponse, type RawProfileResponse, type RawUnfollowResponse, type RawUserSuggestion, type ToggleFollowResponse, type UpdateProfile, type UpdateProfileResponse } from "../types/users.js";
+import { type CreateUser, type FollowResponse, type RawFollowersResponse, type RawFollowingResponse, type RawFollowToggleResponse, type RawProfileResponse, type RawSearchUserResponse, type RawUnfollowResponse, type RawUserSuggestion, type ToggleFollowResponse, type UpdateProfile, type UpdateProfileResponse } from "../types/users.js";
 import { type UserModel } from "../generated/prisma/models/User.js"
 import { prisma } from "../lib/prisma/client.js";
 import { USER_ROLE } from "../generated/prisma/enums.js";
@@ -246,7 +246,6 @@ export async function unfollow(followingId: number, followerId: number): Promise
 
 }
 
-
 export async function suggestUsersToFollow(id: number, limit: number): Promise<RawUserSuggestion[]> {
     return prisma.user.findMany({
         where: {
@@ -262,5 +261,40 @@ export async function suggestUsersToFollow(id: number, limit: number): Promise<R
             },
         },
         take: limit,
+    });
+}
+
+export async function searchUser(q: string, userId: number): Promise<RawSearchUserResponse[]> {
+    return prisma.user.findMany({
+        where: {
+            AND: [
+                {
+                    id: {
+                        not: userId,
+                    },
+                },
+            ],
+            OR: [
+                {
+                    username: {
+                        contains: q,
+                        mode: "insensitive",
+                    },
+                },
+                {
+                    full_name: {
+                        contains: q,
+                        mode: "insensitive",
+                    },
+                },
+            ],
+        },
+        include: {
+            followers: {
+                where: {
+                    follower_id: userId,
+                },
+            },
+        },
     });
 }

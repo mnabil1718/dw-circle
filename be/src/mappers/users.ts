@@ -1,6 +1,7 @@
 import { id } from "zod/locales";
 import { STATIC_UPLOAD_PREFIX } from "../constants/upload.js";
-import type { FollowResponse, RawFollowersResponse, RawFollowingResponse, RawFollowToggleResponse, RawProfileResponse, RawUnfollowResponse, RawUserSuggestion, ToggleFollowResponse, UpdateProfileResponse } from "../types/users.js";
+import type { FollowResponse, RawFollowersResponse, RawFollowingResponse, RawFollowToggleResponse, RawProfileResponse, RawSearchUserResponse, RawUnfollowResponse, RawUserSuggestion, ToggleFollowResponse, UpdateProfileResponse } from "../types/users.js";
+import type { UserModel } from "../generated/prisma/models.js";
 
 export class UserMapper {
     static toProfileResponse(res: RawProfileResponse): UpdateProfileResponse {
@@ -108,5 +109,16 @@ export class UserMapper {
         }
     }
 
-
+    static toSearchResponses(arr: RawSearchUserResponse[]): FollowResponse[] {
+        return arr.map((u) => {
+            return {
+                id: u.id,
+                name: u.full_name,
+                username: u.username,
+                avatar: u.photo_profile ? `${STATIC_UPLOAD_PREFIX}${u.photo_profile}` : undefined,
+                bio: u.bio ?? undefined,
+                is_followed: u.followers.length > 0,
+            }
+        });
+    }
 }
