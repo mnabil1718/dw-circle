@@ -45,9 +45,10 @@ export function initSockets() {
 
     socket.on(FOLLOW_TOGGLED_EVENT, (response: FollowToggledSocketPayload) => {
         const user = selectAuthUser(store.getState());
-        store.dispatch(followToggled(response));
 
-        console.log("SOCKET TYPE", response);
+        if (user) {
+            store.dispatch(followToggled({ response, user }));
+        }
 
         if (user?.user_id === response.result.follower_id && response.type === "follow") {
             store.dispatch(followingAdded({ response, curr_user: user }))

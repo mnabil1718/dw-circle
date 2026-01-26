@@ -177,7 +177,6 @@ const followsSlice = createSlice({
       state,
       action: PayloadAction<FollowToggledSocketPayload>,
     ) => {
-      console.log("FOLLOWER DELETED");
       const response = action.payload;
 
       const idx = state.followers.findIndex(

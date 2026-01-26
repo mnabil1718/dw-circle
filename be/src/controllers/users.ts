@@ -120,25 +120,22 @@ export const postUsersFollow = async (req: Request, res: Response) => {
 
     const exists = await checkIsFollowed(followingId, userId);
 
-    let raw: RawFollowToggleResponse;
-    let type: FollowToggledSocketType = "unfollow";
+    let type: FollowToggledSocketType;
+    let result: ToggleFollowResponse;
+
     if (exists) {
-        raw = await unfollow(followingId, userId);
+        type = "unfollow";
+        const raw = await unfollow(followingId, userId);
+        result = UserMapper.deleteToToggleResponse(raw);
     } else {
-        raw = await follow(followingId, userId);
         type = "follow";
+        const raw = await follow(followingId, userId);
+        result = UserMapper.toToggleResponse(raw);
     }
 
-    const profileData = await getUserProfile(userId);
-    const result = UserMapper.toToggleResponse(raw);
     const socketPayload: FollowToggledSocketPayload = {
         type,
         result,
-        metadata: {
-            user_id: profileData.id,
-            following: profileData._count.following,
-            followers: profileData._count.followers,
-        },
     }
     getSocketServer().emit(FOLLOW_TOGGLED_EVENT, socketPayload);
 

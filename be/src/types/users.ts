@@ -1,5 +1,5 @@
 import z from "zod";
-import type { FollowingGetPayload, UserGetPayload } from "../generated/prisma/models.js";
+import type { FollowingGetPayload, FollowingModel, UserGetPayload } from "../generated/prisma/models.js";
 
 export const passwordSchema = z
     .string()
@@ -109,13 +109,11 @@ export type FollowResponse = {
     is_followed: boolean;
 }
 
-
 export const GetUserFollowsSchema = z.object({
     type: z.literal(["followers", "following"]),
 });
 
 export type GetUserFollowsType = z.infer<typeof GetUserFollowsSchema>;
-
 
 export const ToggleFollowSchema = z.object({
     following_id: z.number().int().gte(1),
@@ -129,6 +127,8 @@ export type ToggleUser = {
     username: string;
     bio: string | undefined;
     avatar: string | undefined;
+    following: number;
+    followers: number;
 };
 
 export type ToggleFollowResponse = {
@@ -147,8 +147,26 @@ export type RawUserSuggestion = UserGetPayload<{
 
 export type RawFollowToggleResponse = FollowingGetPayload<{
     include: {
-        follower: true;
-        following: true;
+        follower: {
+            include: {
+                _count: {
+                    select: {
+                        followers: true,
+                        following: true,
+                    }
+                }
+            }
+        };
+        following: {
+            include: {
+                _count: {
+                    select: {
+                        followers: true,
+                        following: true,
+                    }
+                }
+            }
+        };
     };
 }>;
 
@@ -166,5 +184,29 @@ export type FollowToggledSocketMetadata = {
 export type FollowToggledSocketPayload = {
     type: FollowToggledSocketType;
     result: ToggleFollowResponse;
-    metadata: FollowToggledSocketMetadata;
+}
+
+
+export type RawUnfollowResponse = {
+    deleteResult: FollowingModel;
+    followerUser: UserGetPayload<{
+        include: {
+            _count: {
+                select: {
+                    followers: true,
+                    following: true,
+                },
+            },
+        },
+    }>;
+    followingUser: UserGetPayload<{
+        include: {
+            _count: {
+                select: {
+                    followers: true,
+                    following: true,
+                },
+            },
+        },
+    }>;
 }

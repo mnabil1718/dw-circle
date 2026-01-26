@@ -1,4 +1,4 @@
-import { type CreateUser, type FollowResponse, type RawFollowersResponse, type RawFollowingResponse, type RawFollowToggleResponse, type RawProfileResponse, type RawUserSuggestion, type ToggleFollowResponse, type UpdateProfile, type UpdateProfileResponse } from "../types/users.js";
+import { type CreateUser, type FollowResponse, type RawFollowersResponse, type RawFollowingResponse, type RawFollowToggleResponse, type RawProfileResponse, type RawUnfollowResponse, type RawUserSuggestion, type ToggleFollowResponse, type UpdateProfile, type UpdateProfileResponse } from "../types/users.js";
 import { type UserModel } from "../generated/prisma/models/User.js"
 import { prisma } from "../lib/prisma/client.js";
 import { USER_ROLE } from "../generated/prisma/enums.js";
@@ -166,27 +166,84 @@ export async function follow(followingId: number, followerId: number): Promise<R
             follower_id: followerId,
         },
         include: {
-            following: true,
-            follower: true,
+            following: {
+                include: {
+                    _count: {
+                        select: {
+                            followers: true,
+                            following: true,
+                        }
+                    }
+                }
+            },
+            follower: {
+                include: {
+                    _count: {
+                        select: {
+                            followers: true,
+                            following: true,
+                        }
+                    }
+                }
+            },
         },
     });
 }
 
 
-export async function unfollow(followingId: number, followerId: number): Promise<RawFollowToggleResponse> {
+export async function unfollow(followingId: number, followerId: number): Promise<RawUnfollowResponse> {
 
-    return await prisma.following.delete({
-        where: {
-            follower_id_following_id: {
-                follower_id: followerId,
-                following_id: followingId,
+    // cannot get num of followers and following
+    // on delete, create transaction instead
+    const [deleteFollowResult, followerUser, followingUser] = await prisma.$transaction([
+        // delete
+        prisma.following.delete({
+            where: {
+                follower_id_following_id: {
+                    follower_id: followerId,
+                    following_id: followingId,
+                },
             },
-        },
-        include: {
-            following: true,
-            follower: true,
-        },
-    });
+        }),
+
+        // get follower profile
+        prisma.user.findUnique({
+            where: {
+                id: followerId,
+            },
+            include: {
+                _count: {
+                    select: {
+                        followers: true,
+                        following: true,
+                    },
+                },
+            },
+        }),
+
+        // get following profile
+        prisma.user.findUnique({
+            where: {
+                id: followingId,
+            },
+            include: {
+                _count: {
+                    select: {
+                        followers: true,
+                        following: true,
+                    },
+                },
+            },
+        }),
+
+    ]);
+
+    return {
+        deleteResult: deleteFollowResult,
+        followerUser: followerUser!,
+        followingUser: followingUser!,
+    };
+
 }
 
 

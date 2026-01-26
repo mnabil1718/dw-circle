@@ -1,6 +1,6 @@
 import { id } from "zod/locales";
 import { STATIC_UPLOAD_PREFIX } from "../constants/upload.js";
-import type { FollowResponse, RawFollowersResponse, RawFollowingResponse, RawFollowToggleResponse, RawProfileResponse, RawUserSuggestion, ToggleFollowResponse, UpdateProfileResponse } from "../types/users.js";
+import type { FollowResponse, RawFollowersResponse, RawFollowingResponse, RawFollowToggleResponse, RawProfileResponse, RawUnfollowResponse, RawUserSuggestion, ToggleFollowResponse, UpdateProfileResponse } from "../types/users.js";
 
 export class UserMapper {
     static toProfileResponse(res: RawProfileResponse): UpdateProfileResponse {
@@ -66,6 +66,8 @@ export class UserMapper {
                 username: raw.follower.username,
                 bio: raw.follower.bio ?? undefined,
                 avatar: raw.follower.photo_profile ? `${STATIC_UPLOAD_PREFIX}${raw.follower.photo_profile}` : undefined,
+                followers: raw.follower._count.followers,
+                following: raw.follower._count.following,
             },
             following: {
                 id: raw.following.id,
@@ -73,9 +75,38 @@ export class UserMapper {
                 username: raw.following.username,
                 bio: raw.following.bio ?? undefined,
                 avatar: raw.following.photo_profile ? `${STATIC_UPLOAD_PREFIX}${raw.following.photo_profile}` : undefined,
+                followers: raw.following._count.followers,
+                following: raw.following._count.following,
             }
 
         }
     }
+
+    static deleteToToggleResponse(raw: RawUnfollowResponse): ToggleFollowResponse {
+        return {
+            following_id: raw.deleteResult.following_id,
+            follower_id: raw.deleteResult.follower_id,
+            follower: {
+                id: raw.followerUser.id,
+                name: raw.followerUser.full_name,
+                username: raw.followerUser.username,
+                bio: raw.followerUser.bio ?? undefined,
+                avatar: raw.followerUser.photo_profile ? `${STATIC_UPLOAD_PREFIX}${raw.followerUser.photo_profile}` : undefined,
+                followers: raw.followerUser._count.followers,
+                following: raw.followerUser._count.following,
+            },
+            following: {
+                id: raw.followingUser.id,
+                name: raw.followingUser.full_name,
+                username: raw.followingUser.username,
+                bio: raw.followingUser.bio ?? undefined,
+                avatar: raw.followingUser.photo_profile ? `${STATIC_UPLOAD_PREFIX}${raw.followingUser.photo_profile}` : undefined,
+                followers: raw.followingUser._count.followers,
+                following: raw.followingUser._count.following,
+            }
+
+        }
+    }
+
 
 }

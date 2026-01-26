@@ -4,7 +4,7 @@ import type { RootState } from "./store";
 import type { UpdateProfileDTO, UserProfile } from "~/dto/profile";
 import { createAppAsyncThunk } from "./with-types";
 import { getUserProfile, putUserProfile } from "~/services/profile";
-import { login, logout, selectAuthUser } from "./auth";
+import { login, selectAuthUser } from "./auth";
 import type { FollowToggledSocketPayload } from "~/dto/follow";
 
 export interface ProfileState {
@@ -50,15 +50,30 @@ const profileSlice = createSlice({
   name: "profile",
   initialState,
   reducers: {
-    followToggled(state, action: PayloadAction<FollowToggledSocketPayload>) {
-      const { metadata, result } = action.payload;
+    followToggled(
+      state,
+      action: PayloadAction<{
+        response: FollowToggledSocketPayload;
+        user: UserLoginResponse;
+      }>,
+    ) {
+      const { response } = action.payload;
+      const { result } = response;
 
-      if (
-        state.profile?.id === result.follower_id ||
-        state.profile?.id === result.following_id
-      ) {
-        state.profile.followers = metadata.followers;
-        state.profile.following = metadata.following;
+      if (!state.profile) return;
+
+      const profileUserId = state.profile.id;
+
+      if (profileUserId === result.follower.id) {
+        // Profile belongs to follower
+        state.profile.followers = result.follower.followers;
+        state.profile.following = result.follower.following;
+      }
+
+      if (profileUserId === result.following.id) {
+        // Profile belongs to followed user
+        state.profile.followers = result.following.followers;
+        state.profile.following = result.following.following;
       }
     },
   },

@@ -17,6 +17,8 @@ export type ToggleUser = {
   username: string;
   bio?: string;
   avatar?: string;
+  following: number;
+  followers: number;
 };
 
 export type ToggleFollowResponse = {
@@ -30,15 +32,7 @@ export type ToggleFollowResponse = {
 
 export type FollowToggledSocketType = "follow" | "unfollow";
 
-// from user profile
-export type FollowToggledSocketMetadata = {
-  user_id: number;
-  following: number;
-  followers: number;
-};
-
 export type FollowToggledSocketPayload = {
   type: FollowToggledSocketType;
   result: ToggleFollowResponse;
-  metadata: FollowToggledSocketMetadata;
 };
