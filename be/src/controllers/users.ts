@@ -1,11 +1,11 @@
 import type { Request, Response } from "express";
 import type { UserModel } from "../generated/prisma/models.js";
-import { createUser, getUserByIdentifier, updateUserProfile, getUserProfile, getUserById, checkUserIDExists, getFollowingByUserId, getFollowersByUserId, follow, unfollow, checkIsFollowed, suggestUsersToFollow } from "../services/users.js";
+import { createUser, getUserByIdentifier, updateUserProfile, getUserProfile, getUserById, checkUserIDExists, getFollowingByUserId, getFollowersByUserId, follow, unfollow, checkIsFollowed, suggestUsersToFollow, searchUser } from "../services/users.js";
 import { Hasher } from "../utils/hasher.js";
 import { StatusCodes } from "http-status-codes";
 import { success } from "../utils/response.js";
 import { generateJWT } from "../utils/tokenize.js";
-import { GetUserFollowsSchema, type FollowToggledSocketPayload, type FollowToggledSocketType, type GetUserFollowsType, type LoginUserResponse, type RawFollowToggleResponse, type RegisterUserResponse, type ToggleFollowResponse, type UpdateProfile } from "../types/users.js";
+import { GetUserFollowsSchema, SearchUserFilterSchema, type FollowResponse, type FollowToggledSocketPayload, type FollowToggledSocketType, type GetUserFollowsType, type LoginUserResponse, type RawFollowToggleResponse, type RegisterUserResponse, type ToggleFollowResponse, type UpdateProfile } from "../types/users.js";
 import { UserMapper } from "../mappers/users.js";
 import { STATIC_UPLOAD_PREFIX } from "../constants/upload.js";
 import { getSocketServer } from "../sockets/server.js";
@@ -155,4 +155,22 @@ export const getUsersSuggestions = async (req: Request, res: Response) => {
 
     const code = StatusCodes.CREATED;
     res.status(code).json(success(code, "suggestion fetched successfully", result));
+}
+
+export const getSearchUsers = async (req: Request, res: Response) => {
+    const { sub } = (req as any).user;
+    const userId = Number(sub);
+    const q = SearchUserFilterSchema.parse(req.query);
+
+    const rawq = q.keyword?.trim() ?? "";
+    const kw = rawq.replace(/^@+/, "");
+    let result: FollowResponse[] = [];
+
+    if (kw) {
+        const raw = await searchUser(kw ?? "", userId);
+        result = UserMapper.toSearchResponses(raw);
+    }
+
+    const code = StatusCodes.OK;
+    res.status(code).json(success(code, "Search user successfully", result));
 }

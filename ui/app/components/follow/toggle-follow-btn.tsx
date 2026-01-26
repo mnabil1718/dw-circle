@@ -8,13 +8,14 @@ import {
   selectSingleFollowing,
   selectSingleFollower,
 } from "~/store/follow";
+import { selectSearchResultById } from "~/store/search";
 
 export function ToggleFollowButton({
   follow,
   selector,
 }: {
   follow: Follow;
-  selector: "suggestions" | "following" | "followers";
+  selector: "suggestions" | "following" | "followers" | "search";
 }) {
   const dispatch = useAppDispatch();
 
@@ -26,6 +27,8 @@ export function ToggleFollowButton({
         return selectSingleFollowing(follow.id)(state);
       case "followers":
         return selectSingleFollower(follow.id)(state);
+      case "search":
+        return selectSearchResultById(follow.id)(state);
       default:
         return undefined;
     }
@@ -42,7 +45,7 @@ export function ToggleFollowButton({
   return (
     <Button
       variant="outline"
-      className="rounded-full"
+      className="rounded-full cursor-pointer"
       onClick={toggleFollowHandler}
     >
       {flw?.is_followed ? "Following" : "Follow"}
