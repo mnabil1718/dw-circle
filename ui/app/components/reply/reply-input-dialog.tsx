@@ -86,7 +86,7 @@ export function ReplyInputDialog(param: ReplyInputOptions) {
               <PostMiniPreview thread={param.thread} />
 
               <div className="flex items-start gap-2">
-                <Avatar className="w-10 h-10" />
+                <Avatar image={user?.avatar} className="w-10 h-10" />
                 <Typebox placeholder="Type your Reply!" maxHeight={300} />
               </div>
 

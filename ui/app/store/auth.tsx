@@ -1,6 +1,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { UserLoginResponse } from "~/dto/auth";
 import type { RootState } from "./store";
+import { updateProfile } from "./profile";
 
 export interface AuthState {
   user: UserLoginResponse | null;
@@ -34,8 +35,20 @@ const authSlice = createSlice({
       if (typeof window !== "undefined")
         localStorage.removeItem(LOCAL_STORAGE_KEY);
 
-      return initialState;
+      // returning initial state will get data from
+      // localStorage and user will never be null
+      state.user = null;
     },
+  },
+  extraReducers(builder) {
+    builder.addCase(updateProfile.fulfilled, (state, action) => {
+      const { name, username, avatar } = action.payload;
+      if (state.user) {
+        state.user.name = name;
+        state.user.username = username;
+        if (avatar) state.user.avatar = avatar;
+      }
+    });
   },
 });
 

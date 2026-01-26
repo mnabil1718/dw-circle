@@ -1,15 +1,15 @@
 import type { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { success } from "../utils/response.js";
-import type { CreateThread, RawCreateThreadResponse, RawThreadResponse } from "../services/threads/types.js";
-import { createThread, getAllThread, getThreadById } from "../services/threads/queries.js";
-import { ThreadMapper } from "../services/threads/map.js";
+import type { CreateThread, RawCreateThreadResponse, RawThreadResponse } from "../types/threads.js";
+import { createThread, getAllThread, getThreadById } from "../services/threads.js";
+import { ThreadMapper } from "../mappers/threads.js";
 import { FilterSchema, type FilterType } from "../utils/filters.js";
 import { getSocketServer } from "../sockets/server.js";
 import { REPLY_CREATED_EVENT, THREAD_CREATED_EVENT } from "../constants/events.js";
-import type { CreateReplyResponse, RawCreateReplyResponse, RawReplyResponse } from "../services/replies/types.js";
-import { createReply, getAllReplies } from "../services/replies/queries.js";
-import { ReplyMapper } from "../services/replies/map.js";
+import type { CreateReplyResponse, RawReplyResponse } from "../types/replies.js";
+import { createReply, getAllReplies } from "../services/replies.js";
+import { ReplyMapper } from "../mappers/replies.js";
 
 export const postThreads = async (req: Request, res: Response) => {
     const { sub } = (req as any).user;

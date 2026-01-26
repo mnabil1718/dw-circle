@@ -1,5 +1,5 @@
-import { STATIC_UPLOAD_PREFIX } from "../../constants/upload.js";
-import type { RawCreateReplyResponse, RawReplyResponse, ReplyResponse } from "./types.js";
+import { STATIC_UPLOAD_PREFIX } from "../constants/upload.js";
+import type { RawCreateReplyResponse, RawReplyResponse, ReplyResponse } from "../types/replies.js";
 
 export class ReplyMapper {
     static createToResponse(raw: RawCreateReplyResponse): ReplyResponse {
@@ -14,7 +14,7 @@ export class ReplyMapper {
                 id: raw.creator.id,
                 name: raw.creator.full_name,
                 username: raw.creator.username,
-                profile_picture: raw.creator.photo_profile ?? undefined,
+                profile_picture: raw.creator.photo_profile ? `${STATIC_UPLOAD_PREFIX}${raw.creator.photo_profile}` : undefined,
             },
             isLiked: false,
         };
@@ -34,7 +34,7 @@ export class ReplyMapper {
                     id: t.creator.id,
                     name: t.creator.full_name,
                     username: t.creator.username,
-                    profile_picture: t.creator.photo_profile ?? undefined,
+                    profile_picture: t.creator.photo_profile ? `${STATIC_UPLOAD_PREFIX}${t.creator.photo_profile}` : undefined,
                 },
                 isLiked: t.likes.length > 0,
             };

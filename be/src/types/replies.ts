@@ -1,6 +1,6 @@
 import z from "zod";
-import type { ReplyGetPayload } from "../../generated/prisma/models.js";
-import type { Author } from "../threads/types.js";
+import type { ReplyGetPayload } from "../generated/prisma/models.js";
+import type { Author } from "../types/threads.js";
 
 export const CreateReplySchema = z.object({
     content: z.string().min(1).max(300),

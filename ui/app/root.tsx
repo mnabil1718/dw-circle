@@ -15,6 +15,7 @@ import { useEffect } from "react";
 import { initSockets } from "./sockets/init";
 import { socket } from "./lib/socket";
 import { AuthWatcher } from "./components/auth/auth-watch";
+import { PageLoading } from "./components/page-loading";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -66,6 +67,10 @@ export default function App() {
       <Outlet />
     </AuthWatcher>
   );
+}
+
+export function HydrateFallback() {
+  return <PageLoading />;
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

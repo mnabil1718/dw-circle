@@ -1,4 +1,4 @@
-import { logout, selectAuthUser } from "./auth";
+import { login, logout, selectAuthUser } from "./auth";
 import { type RootState } from "./store";
 import { postLikeReply } from "~/services/like";
 import { createAppAsyncThunk } from "./with-types";
@@ -201,7 +201,7 @@ const replySlice = createSlice({
         state.error = action.error.message ?? "Failed to unlike";
       })
 
-      .addCase(logout, (state) => {
+      .addCase(login, (state) => {
         return initialState;
       })
 
@@ -214,7 +214,7 @@ const replySlice = createSlice({
 export const { replyLikeToggled, replyCreated } = replySlice.actions;
 export default replySlice.reducer;
 
-// ======== THREADS =========
+// ======== SELECT =========
 export const selectAllReplies = (state: RootState) => state.replies.replies;
 export const selectRepliesById = (id: number) => (state: RootState) =>
   state.replies.replies.find((r) => r.id === id);

@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { validate, validateQuery } from "../middlewares/validate.js";
-import { CreateThreadSchema } from "../services/threads/types.js";
+import { CreateThreadSchema } from "../types/threads.js";
 import { getReplies, getThreads, getThreadsById, postReplyThread, postThreads } from "../controllers/threads.js";
 import { authenticate } from "../middlewares/authenticate.js";
 import { singleImageUploadMiddleware } from "../middlewares/upload.js";
-import { CreateReplySchema } from "../services/replies/types.js";
+import { CreateReplySchema } from "../types/replies.js";
 import { FilterSchema } from "../utils/filters.js";
 
 const router = Router();

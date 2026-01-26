@@ -1,7 +1,7 @@
-import type { CreateThread, RawCreateThreadResponse, RawThreadResponse } from "./types.js";
-import { prisma } from "../../lib/prisma/client.js";
-import { buildFilterQuery, type FilterType } from "../../utils/filters.js";
-import { NotFoundError } from "../../utils/errors.js";
+import type { CreateThread, RawCreateThreadResponse, RawThreadResponse } from "../types/threads.js";
+import { prisma } from "../lib/prisma/client.js";
+import { buildFilterQuery, type FilterType } from "../utils/filters.js";
+import { NotFoundError } from "../utils/errors.js";
 
 export async function createThread(data: CreateThread): Promise<RawCreateThreadResponse> {
     return await prisma.thread.create({

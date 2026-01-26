@@ -19,10 +19,10 @@ export function ProfileCard() {
   const status = useAppSelector(selectProfileStatus);
 
   useEffect(() => {
-    if (status === "idle" && user) {
+    if (user) {
       dispatch(fetchProfile(user.user_id));
     }
-  }, [status, dispatch, user]);
+  }, [dispatch, user]);
 
   return (
     <Card className="border-none">
@@ -33,7 +33,7 @@ export function ProfileCard() {
           <Avatar
             image={profile?.avatar}
             alt={profile?.name}
-            className="w-20 h-20 -mt-10 ml-2 border-4 border-card"
+            className="w-20 h-20 -mt-10 ml-2 bg-card border-4 border-card"
           />
           <EditProfileDialog />
         </div>

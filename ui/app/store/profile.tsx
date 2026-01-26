@@ -4,7 +4,8 @@ import type { RootState } from "./store";
 import type { UpdateProfileDTO, UserProfile } from "~/dto/profile";
 import { createAppAsyncThunk } from "./with-types";
 import { getUserProfile, putUserProfile } from "~/services/profile";
-import { logout, selectAuthUser } from "./auth";
+import { login, selectAuthUser } from "./auth";
+import type { FollowToggledSocketPayload } from "~/dto/follow";
 
 export interface ProfileState {
   profile: UserProfile | null;
@@ -48,7 +49,34 @@ export const updateProfile = createAppAsyncThunk(
 const profileSlice = createSlice({
   name: "profile",
   initialState,
-  reducers: {},
+  reducers: {
+    followToggled(
+      state,
+      action: PayloadAction<{
+        response: FollowToggledSocketPayload;
+        user: UserLoginResponse;
+      }>,
+    ) {
+      const { response } = action.payload;
+      const { result } = response;
+
+      if (!state.profile) return;
+
+      const profileUserId = state.profile.id;
+
+      if (profileUserId === result.follower.id) {
+        // Profile belongs to follower
+        state.profile.followers = result.follower.followers;
+        state.profile.following = result.follower.following;
+      }
+
+      if (profileUserId === result.following.id) {
+        // Profile belongs to followed user
+        state.profile.followers = result.following.followers;
+        state.profile.following = result.following.following;
+      }
+    },
+  },
   extraReducers(builder) {
     builder
 
@@ -69,23 +97,22 @@ const profileSlice = createSlice({
 
       // ======  UPDATE PROFILE =====
       .addCase(updateProfile.pending, (state, action) => {
-        state.profile = {
-          id: -1,
-          username: action.meta.arg.username,
-          name: action.meta.arg.name,
-          bio: action.meta.arg.bio,
-          avatar: action.meta.arg.image
-            ? URL.createObjectURL(action.meta.arg.image)
-            : state.profile?.avatar,
-          followers: 0,
-          following: 0,
-        };
+        // state.profile = {
+        //   id: -1,
+        //   username: action.meta.arg.username,
+        //   name: action.meta.arg.name,
+        //   bio: action.meta.arg.bio,
+        //   avatar: action.meta.arg.image
+        //     ? URL.createObjectURL(action.meta.arg.image)
+        //     : state.profile?.avatar,
+        //   followers: 0,
+        //   following: 0,
+        // };
 
         state.error = null;
       })
 
       .addCase(updateProfile.fulfilled, (state, action) => {
-        state.status = "succeeded";
         if (state.profile?.avatar) {
           URL.revokeObjectURL(state.profile.avatar);
         }
@@ -94,18 +121,18 @@ const profileSlice = createSlice({
       })
 
       .addCase(updateProfile.rejected, (state, action) => {
-        state.status = "failed";
         state.error = action.error.message ?? "Failed to uodate profile";
       })
 
-      .addCase(logout, (state) => {
+      .addCase(login, (state) => {
         return initialState;
       });
   },
 });
 
-export const {} = profileSlice.actions;
+export const { followToggled } = profileSlice.actions;
 export default profileSlice.reducer;
 
+// ===========  SELECT   ===========
 export const selectProfile = (state: RootState) => state.profile.profile;
 export const selectProfileStatus = (state: RootState) => state.profile.status;

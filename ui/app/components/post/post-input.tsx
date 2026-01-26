@@ -41,7 +41,7 @@ export function PostInput(param?: PostInputOptions) {
         className="w-full flex flex-col gap-2"
       >
         <div className="flex items-start gap-2">
-          <Avatar className="w-10 h-10" />
+          <Avatar image={user?.avatar} className="w-10 h-10" />
           <Typebox placeholder={param?.placeholder} />
           <div className="flex-none flex gap-3 items-center">
             <ImageUpload fileInputRef={fileInputRef} />
