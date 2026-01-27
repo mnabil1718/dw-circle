@@ -98,6 +98,7 @@ export function ImagesFeed() {
         {images.map((i, index) => {
           return (
             <div
+              key={index}
               className="col-span-1 aspect-square overflow-hidden cursor-pointer"
               onClick={() => openImageDialog(index)}
             >

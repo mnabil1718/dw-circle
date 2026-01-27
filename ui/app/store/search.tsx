@@ -42,7 +42,11 @@ const searchSlice = createSlice({
       } else {
         state.status = "pending";
       }
+
       state.keyword = action.payload;
+    },
+    resetSearch: (state) => {
+      return initialState;
     },
   },
 
@@ -118,7 +122,7 @@ const searchSlice = createSlice({
   },
 });
 
-export const { setKeyword } = searchSlice.actions;
+export const { setKeyword, resetSearch } = searchSlice.actions;
 export default searchSlice.reducer;
 
 // ======== SELECT =========

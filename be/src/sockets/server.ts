@@ -1,6 +1,6 @@
 import type { Server as HTTPServer } from "http";
 import { config } from "../utils/config.js";
-import { type Socket, Server } from "socket.io";
+import { Server } from "socket.io";
 
 // global singleton server object
 let io: Server | null = null;

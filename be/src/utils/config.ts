@@ -10,4 +10,7 @@ export const config = {
     jwt: {
         secret: process.env.JWT_SECRET,
     },
+    redis: {
+        url: process.env.REDIS_URL ?? "redis://localhost:6379",
+    },
 };
