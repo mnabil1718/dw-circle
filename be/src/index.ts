@@ -2,6 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import { config } from "./utils/config.js";
 import routes from "./routes/index.js";
+import swaggerRoute from "./lib/swagger/swagger.js";
 import { errorHandler } from "./middlewares/error.js";
 import { corsMiddleware } from "./middlewares/cors.js";
 import { limiterMiddleware } from "./middlewares/rate-limit.js";
@@ -21,6 +22,8 @@ const httpServer = createServer(app);
 
 createSocketServer(httpServer);
 initSocket();
+
+app.use('/api/docs', swaggerRoute);
 
 app.use(
     "/static",
