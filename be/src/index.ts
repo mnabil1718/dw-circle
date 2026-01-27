@@ -1,4 +1,4 @@
-import express, { type Request, type Response } from "express";
+import express from "express";
 import bodyParser from "body-parser";
 import { config } from "./utils/config.js";
 import routes from "./routes/index.js";
@@ -8,12 +8,13 @@ import { limiterMiddleware } from "./middlewares/rate-limit.js";
 import cookieParser from "cookie-parser";
 import path from "path";
 import { createServer } from "http";
-import { Server } from "socket.io";
 import { createSocketServer } from "./sockets/server.js";
 import { initSocket } from "./sockets/conn.js";
-
+import { initRedis } from "./lib/redis/redis.js";
 
 const __dirname = new URL(".", import.meta.url).pathname;
+
+await initRedis();
 
 const app = express();
 const httpServer = createServer(app);
