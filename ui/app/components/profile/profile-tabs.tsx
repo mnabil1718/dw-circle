@@ -23,6 +23,7 @@ export function ProfileTabs({ type }: { type: "own" | "other" }) {
   const profile = useAppSelector(selectProfileOnType(type));
   const follow = useAppSelector(selectSingleActiveFollow);
 
+  //   TODO: Tidy up nested if
   if (type === "other") {
     if (!profile || !follow) {
       return (
@@ -67,7 +68,7 @@ export function ProfileTabs({ type }: { type: "own" | "other" }) {
                 {type === "own" ? (
                   <EditProfileDialog />
                 ) : (
-                  <ToggleFollowButton selector="active" follow={follow} />
+                  <ToggleFollowButton selector="active" follow={follow!} />
                 )}
               </div>
             </div>

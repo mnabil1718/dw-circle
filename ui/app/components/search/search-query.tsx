@@ -9,6 +9,7 @@ import { useDebounce } from "~/hooks/use-debounce";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import {
   fetchResults,
+  resetSearch,
   selectSearchKeyword,
   selectSearchStatus,
   setKeyword,
@@ -23,6 +24,10 @@ export function SearchQuery() {
   useEffect(() => {
     if (dQuery.trim() === "") return;
     dispatch(fetchResults(dQuery));
+
+    return () => {
+      dispatch(resetSearch());
+    };
   }, [dispatch, dQuery]);
 
   const searchHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
