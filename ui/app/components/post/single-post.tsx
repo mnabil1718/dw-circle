@@ -40,7 +40,13 @@ export function SinglePost({ thread }: SinglePostProps) {
           <p className="whitespace-pre-wrap wrap-break-word">
             {thread.content}
           </p>
-          <ImageViewer image_url={thread.image} />
+          <ImageViewer image_url={thread.image}>
+            <img
+              src={thread.image}
+              alt={thread.image}
+              className="w-full h-full object-cover"
+            />
+          </ImageViewer>
         </div>
 
         {/* Time */}

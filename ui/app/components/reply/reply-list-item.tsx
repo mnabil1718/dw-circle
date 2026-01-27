@@ -33,7 +33,13 @@ export function ReplyListItem({ reply }: PostListItemProps) {
         <p className="text-sm whitespace-pre-wrap wrap-break-word">
           {reply.content}
         </p>
-        <ImageViewer image_url={reply.image} />
+        <ImageViewer image_url={reply.image}>
+          <img
+            src={reply.image}
+            alt={reply.image}
+            className="w-full h-full object-cover"
+          />
+        </ImageViewer>
         <div className="flex items-center gap-5 text-sm">
           <LikeReplyBtn reply={reply} />
         </div>
