@@ -6,9 +6,12 @@ import type {
 import { api } from "./api";
 import type { APIResponse } from "~/dto/api";
 
-export const getThreads = async (limit = 100): Promise<Thread[]> => {
+export const getThreads = async (
+  limit = 100,
+  userId?: number,
+): Promise<Thread[]> => {
   const res = await api.get<APIResponse<{ threads: Thread[] }>>(
-    `/threads?limit=${limit}`,
+    `/threads?limit=${limit}${userId ? `&userId=${userId}` : ""}`,
   );
   return res.data.data!.threads;
 };
@@ -30,4 +33,14 @@ export const postThreads = async (req: CreateThreadDTO): Promise<Thread> => {
   });
 
   return res.data.data!.tweet;
+};
+
+export const getThreadsByUserId = async (
+  limit = 100,
+  mine = false,
+): Promise<Thread[]> => {
+  const res = await api.get<APIResponse<{ threads: Thread[] }>>(
+    `/threads?limit=${limit}${mine ? "&mine" : ""}`,
+  );
+  return res.data.data!.threads;
 };

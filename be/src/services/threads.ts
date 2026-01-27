@@ -26,7 +26,16 @@ export async function createThread(data: CreateThread): Promise<RawCreateThreadR
 
 export async function getAllThread(user_id: number, filter: FilterType): Promise<RawThreadResponse[]> {
     const limits = buildFilterQuery(filter);
-    return await prisma.thread.findMany({
+    const ownerId = filter.userId; // optional scoping for profile
+
+    console.log("OWNER: ", ownerId);
+
+    const res = await prisma.thread.findMany({
+        where: {
+            ...(ownerId && {
+                created_by: ownerId,
+            }),
+        },
         include: {
             creator: true,
             _count: {
@@ -49,8 +58,9 @@ export async function getAllThread(user_id: number, filter: FilterType): Promise
         },
         ...limits
     });
-}
 
+    return res;
+}
 
 export async function getThreadById(id: number, userId: number): Promise<RawThreadResponse> {
     const t = await prisma.thread.findUnique({
