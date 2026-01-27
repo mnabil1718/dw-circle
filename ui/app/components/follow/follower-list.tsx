@@ -10,6 +10,7 @@ import { Button } from "../ui/button";
 import { Avatar } from "../avatar";
 import { ToggleFollowButton } from "./toggle-follow-btn";
 import type { Follow } from "~/dto/follow";
+import { ProfileLink } from "../profile/profile-link";
 
 export function FollowerList() {
   const dispatch = useAppDispatch();
@@ -47,7 +48,11 @@ export function FollowerListItem({ follow }: { follow: Follow }) {
         <Avatar image={follow.avatar} className="w-10 h-10 flex-none" />
 
         <div className="text-sm flex-1">
-          <h3 className="font-semibold block">{follow.name}</h3>
+          <ProfileLink targetId={follow.id} username={follow.username}>
+            <h3 className="font-semibold block hover:underline">
+              {follow.name}
+            </h3>
+          </ProfileLink>
           <p className="text-muted-foreground mb-2">@{follow.username}</p>
           <p className="line-clamp-1">{follow.bio}</p>
         </div>

@@ -3,18 +3,24 @@ import type { UserLoginResponse } from "~/dto/auth";
 import type { RootState } from "./store";
 import type { UpdateProfileDTO, UserProfile } from "~/dto/profile";
 import { createAppAsyncThunk } from "./with-types";
-import { getUserProfile, putUserProfile } from "~/services/profile";
+import {
+  getUserProfile,
+  getUserProfileByUsername,
+  putUserProfile,
+} from "~/services/profile";
 import { login, selectAuthUser } from "./auth";
 import type { FollowToggledSocketPayload } from "~/dto/follow";
 
 export interface ProfileState {
   profile: UserProfile | null;
+  userProfile: UserProfile | null; // for getting other people profile detail
   status: "idle" | "pending" | "succeeded" | "failed";
   error: string | null;
 }
 
 const initialState: ProfileState = {
   profile: null,
+  userProfile: null,
   status: "idle",
   error: null,
 };
@@ -38,6 +44,21 @@ export const fetchProfile = createAppAsyncThunk(
   },
 );
 
+export const fetchUserProfile = createAppAsyncThunk(
+  "profile/fetchUserProfile",
+  async (username: string) => {
+    return await getUserProfileByUsername(username);
+  },
+  {
+    condition(arg, thunkApi) {
+      const user = selectAuthUser(thunkApi.getState());
+      if (!user) {
+        return false;
+      }
+    },
+  },
+);
+
 // UPDATE
 export const updateProfile = createAppAsyncThunk(
   "profile/updateProfile",
@@ -45,6 +66,24 @@ export const updateProfile = createAppAsyncThunk(
     return await putUserProfile(p);
   },
 );
+
+// HELPER
+function applyFollowResult(
+  profile: UserProfile | null,
+  result: FollowToggledSocketPayload["result"],
+) {
+  if (!profile) return;
+
+  if (profile.id === result.follower.id) {
+    profile.followers = result.follower.followers;
+    profile.following = result.follower.following;
+  }
+
+  if (profile.id === result.following.id) {
+    profile.followers = result.following.followers;
+    profile.following = result.following.following;
+  }
+}
 
 const profileSlice = createSlice({
   name: "profile",
@@ -57,24 +96,13 @@ const profileSlice = createSlice({
         user: UserLoginResponse;
       }>,
     ) {
-      const { response } = action.payload;
-      const { result } = response;
+      const { result } = action.payload.response;
 
-      if (!state.profile) return;
+      // ===== OWN PROFILE =====
+      applyFollowResult(state.profile, result);
 
-      const profileUserId = state.profile.id;
-
-      if (profileUserId === result.follower.id) {
-        // Profile belongs to follower
-        state.profile.followers = result.follower.followers;
-        state.profile.following = result.follower.following;
-      }
-
-      if (profileUserId === result.following.id) {
-        // Profile belongs to followed user
-        state.profile.followers = result.following.followers;
-        state.profile.following = result.following.following;
-      }
+      // ===== OTHER USER PROFILE =====
+      applyFollowResult(state.userProfile, result);
     },
   },
   extraReducers(builder) {
@@ -92,6 +120,17 @@ const profileSlice = createSlice({
 
       .addCase(fetchProfile.rejected, (state, action) => {
         state.status = "failed";
+        state.error = action.error.message ?? "Unknown Error";
+      })
+
+      // ======  GET USER PROFILE =====
+      .addCase(fetchUserProfile.pending, (state, _) => {})
+
+      .addCase(fetchUserProfile.fulfilled, (state, action) => {
+        state.userProfile = action.payload;
+      })
+
+      .addCase(fetchUserProfile.rejected, (state, action) => {
         state.error = action.error.message ?? "Unknown Error";
       })
 
@@ -135,4 +174,18 @@ export default profileSlice.reducer;
 
 // ===========  SELECT   ===========
 export const selectProfile = (state: RootState) => state.profile.profile;
+export const selectUserProfile = (state: RootState) =>
+  state.profile.userProfile;
 export const selectProfileStatus = (state: RootState) => state.profile.status;
+
+export const selectProfileOnType =
+  (type: "own" | "other") => (state: RootState) => {
+    switch (type) {
+      case "own":
+        return selectProfile(state);
+      case "other":
+        return selectUserProfile(state);
+      default:
+        return selectUserProfile(state);
+    }
+  };

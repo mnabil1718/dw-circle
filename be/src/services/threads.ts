@@ -28,8 +28,6 @@ export async function getAllThread(user_id: number, filter: FilterType): Promise
     const limits = buildFilterQuery(filter);
     const ownerId = filter.userId; // optional scoping for profile
 
-    console.log("OWNER: ", ownerId);
-
     const res = await prisma.thread.findMany({
         where: {
             ...(ownerId && {

@@ -4,6 +4,7 @@ import { formatPostDuration } from "~/utils/date";
 import type { Reply } from "~/dto/reply";
 import { LikeReplyBtn } from "./like-reply-btn";
 import { ImageViewer } from "../image-viewer";
+import { ProfileLink } from "../profile/profile-link";
 
 type PostListItemProps = {
   reply: Reply;
@@ -18,7 +19,9 @@ export function ReplyListItem({ reply }: PostListItemProps) {
       />
       <div className="flex flex-col gap-2">
         <div className="text-sm flex items-center gap-2">
-          <h2 className="font-medium">{reply.user.name}</h2>
+          <ProfileLink targetId={reply.user.id} username={reply.user.username}>
+            <h2 className="font-medium hover:underline">{reply.user.name}</h2>
+          </ProfileLink>
           <span className="text-sm text-muted-foreground">
             @{reply.user.username}
           </span>

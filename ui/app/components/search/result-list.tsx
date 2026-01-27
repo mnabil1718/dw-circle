@@ -9,6 +9,8 @@ import type { Follow } from "~/dto/follow";
 import { Avatar } from "../avatar";
 import { ToggleFollowButton } from "../follow/toggle-follow-btn";
 import { Loader } from "lucide-react";
+import { Link } from "react-router";
+import { ProfileLink } from "../profile/profile-link";
 
 export function ResultList() {
   const results = useAppSelector(selectSearchResults);
@@ -58,7 +60,11 @@ export function SearchListItem({ follow }: { follow: Follow }) {
         <Avatar image={follow.avatar} className="w-10 h-10 flex-none" />
 
         <div className="text-sm flex-1">
-          <h3 className="font-semibold block">{follow.name}</h3>
+          <ProfileLink targetId={follow.id} username={follow.username}>
+            <h3 className="font-semibold block hover:underline">
+              {follow.name}
+            </h3>
+          </ProfileLink>
           <p className="text-muted-foreground mb-2">@{follow.username}</p>
           <p className="line-clamp-1">{follow.bio}</p>
         </div>

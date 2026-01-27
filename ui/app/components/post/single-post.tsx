@@ -4,6 +4,7 @@ import { MessageSquare } from "lucide-react";
 import { formatDate, formatTime } from "~/utils/date";
 import { ImageViewer } from "../image-viewer";
 import { SingleLikeBtn } from "./single-like-btn";
+import { ProfileLink } from "../profile/profile-link";
 
 type SinglePostProps = {
   thread: Thread;
@@ -20,7 +21,14 @@ export function SinglePost({ thread }: SinglePostProps) {
             className="w-10 h-10 flex-none"
           />
           <div className="text-sm gap-2">
-            <h2 className="font-medium">{thread.user.name}</h2>
+            <ProfileLink
+              targetId={thread.user.id}
+              username={thread.user.username}
+            >
+              <h2 className="font-medium hover:underline">
+                {thread.user.name}
+              </h2>
+            </ProfileLink>
             <span className="text-sm text-muted-foreground">
               @{thread.user.username}
             </span>

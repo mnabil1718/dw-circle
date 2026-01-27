@@ -31,3 +31,11 @@ export const getUserProfile = async (userId: number): Promise<UserProfile> => {
   );
   return res.data.data!;
 };
+
+
+export const getUserProfileByUsername = async (username: string): Promise<UserProfile> => {
+  const res = await api.get<APIResponse<UserProfile>>(
+    `/users/${username}/profile/username`,
+  );
+  return res.data.data!;
+};
