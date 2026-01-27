@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import type { UserModel } from "../generated/prisma/models.js";
-import { createUser, getUserByIdentifier, updateUserProfile, getUserProfile, getUserById, checkUserIDExists, getFollowingByUserId, getFollowersByUserId, follow, unfollow, checkIsFollowed, suggestUsersToFollow, searchUser } from "../services/users.js";
+import { createUser, getUserByIdentifier, updateUserProfile, getUserProfile, getUserById, checkUserIDExists, getFollowingByUserId, getFollowersByUserId, follow, unfollow, checkIsFollowed, suggestUsersToFollow, searchUser, getUserProfileByUsername, getActiveUserFollow } from "../services/users.js";
 import { Hasher } from "../utils/hasher.js";
 import { StatusCodes } from "http-status-codes";
 import { success } from "../utils/response.js";
@@ -88,6 +88,20 @@ export const getUsersProfile = async (req: Request, res: Response) => {
 }
 
 
+export const getUsersProfileByUsername = async (req: Request, res: Response) => {
+
+    const { sub } = (req as any).user;
+    const { username } = req.params;
+    const userId = Number(sub);
+
+    const raw = await getUserProfileByUsername(username as string, userId);
+    const profile = UserMapper.toProfileResponse(raw);
+
+    const code = StatusCodes.OK;
+    res.status(code).json(success(code, "Profile fetched successfully", profile));
+}
+
+
 export const getUsersFollows = async (req: Request, res: Response) => {
     const { sub } = (req as any).user;
     const userId = Number(sub);
@@ -155,6 +169,22 @@ export const getUsersSuggestions = async (req: Request, res: Response) => {
     const code = StatusCodes.CREATED;
     res.status(code).json(success(code, "suggestion fetched successfully", result));
 }
+
+
+export const getUsersActiveFollow = async (req: Request, res: Response) => {
+    const { sub } = (req as any).user;
+    const { username } = req.params;
+    const userId = Number(sub);
+
+    await checkUserIDExists(userId);
+
+    const raw = await getActiveUserFollow(userId, username as string);
+    const result = UserMapper.toActiveFollowerResponse(raw);
+
+    const code = StatusCodes.CREATED;
+    res.status(code).json(success(code, "active profile follow status fetched successfully", result));
+}
+
 
 export const getSearchUsers = async (req: Request, res: Response) => {
     const { sub } = (req as any).user;

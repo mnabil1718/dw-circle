@@ -1,6 +1,7 @@
 import type { Follow, FollowToggledSocketPayload } from "~/dto/follow";
 import { createAppAsyncThunk } from "./with-types";
 import {
+  getUserActiveFollow,
   getUserFollows,
   getUserFollowSuggestions,
   postToggleUsersFollows,
@@ -14,6 +15,7 @@ export interface FollowState {
   following: Follow[];
   followers: Follow[];
   suggestions: Follow[];
+  active: Follow | null;
   // statuses
   following_status: "idle" | "pending" | "succeeded" | "failed";
   follower_status: "idle" | "pending" | "succeeded" | "failed";
@@ -25,6 +27,7 @@ const initialState: FollowState = {
   following: [],
   followers: [],
   suggestions: [],
+  active: null,
   following_status: "idle",
   follower_status: "idle",
   suggestion_status: "idle",
@@ -78,6 +81,22 @@ export const fetchFollowing = createAppAsyncThunk(
       const status = selectFollowsFollowingStatus(thunkApi.getState());
       const user = selectAuthUser(thunkApi.getState());
       if (status !== "idle" || !user) {
+        return false;
+      }
+    },
+  },
+);
+
+// GET ACTIVE
+export const fetchActiveFollow = createAppAsyncThunk(
+  "follows/fetchActiveFollowing",
+  async (username: string) => {
+    return await getUserActiveFollow(username);
+  },
+  {
+    condition(arg, thunkApi) {
+      const user = selectAuthUser(thunkApi.getState());
+      if (!user) {
         return false;
       }
     },
@@ -192,6 +211,20 @@ const followsSlice = createSlice({
   extraReducers(builder) {
     builder
 
+      // ======  GET ACTIVE  ======
+      .addCase(fetchActiveFollow.pending, (state, action) => {
+        state.error = null;
+      })
+
+      .addCase(fetchActiveFollow.fulfilled, (state, action) => {
+        state.active = action.payload;
+      })
+
+      .addCase(fetchActiveFollow.rejected, (state, action) => {
+        state.active = null;
+        state.error = action.error.message ?? "Unknown Error";
+      })
+
       // ======  GET SUGGESTIONS =====
       .addCase(fetchFollowSuggestions.pending, (state, action) => {
         state.suggestion_status = "pending";
@@ -245,20 +278,18 @@ const followsSlice = createSlice({
       .addCase(follow.pending, (state, action) => {
         const followingId = action.meta.arg;
 
-        const i = state.following.findIndex((f) => f.id === followingId);
-        if (i !== -1) {
-          state.following[i].is_followed = true;
+        if (state.active?.id === followingId) {
+          state.active.is_followed = true;
         }
+
+        const i = state.following.findIndex((f) => f.id === followingId);
+        if (i !== -1) state.following[i].is_followed = true;
 
         const y = state.followers.findIndex((f) => f.id === followingId);
-        if (y !== -1) {
-          state.followers[y].is_followed = true;
-        }
+        if (y !== -1) state.followers[y].is_followed = true;
 
         const z = state.suggestions.findIndex((f) => f.id === followingId);
-        if (z !== -1) {
-          state.suggestions[z].is_followed = true;
-        }
+        if (z !== -1) state.suggestions[z].is_followed = true;
       })
 
       .addCase(follow.fulfilled, (state, action) => {})
@@ -288,20 +319,18 @@ const followsSlice = createSlice({
       .addCase(unfollow.pending, (state, action) => {
         const followingId = action.meta.arg;
 
-        const i = state.following.findIndex((f) => f.id === followingId);
-        if (i !== -1) {
-          state.following[i].is_followed = false;
+        if (state.active?.id === followingId) {
+          state.active.is_followed = false;
         }
+
+        const i = state.following.findIndex((f) => f.id === followingId);
+        if (i !== -1) state.following[i].is_followed = false;
 
         const y = state.followers.findIndex((f) => f.id === followingId);
-        if (y !== -1) {
-          state.followers[y].is_followed = false;
-        }
+        if (y !== -1) state.followers[y].is_followed = false;
 
         const z = state.suggestions.findIndex((f) => f.id === followingId);
-        if (z !== -1) {
-          state.suggestions[z].is_followed = false;
-        }
+        if (z !== -1) state.suggestions[z].is_followed = false;
       })
 
       .addCase(unfollow.fulfilled, (state, action) => {})
@@ -351,6 +380,8 @@ export const selectSingleFollowing = (id: number) => (state: RootState) =>
   state.follows.following.find((f) => f.id === id);
 export const selectSingleSuggestion = (id: number) => (state: RootState) =>
   state.follows.suggestions.find((f) => f.id === id);
+export const selectSingleActiveFollow = (state: RootState) =>
+  state.follows.active;
 
 export const selectFollowSuggestions = (state: RootState) =>
   state.follows.suggestions;

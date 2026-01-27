@@ -1,19 +1,19 @@
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { PostListItem } from "./post-list-item";
 import { fetchMyThreads, selectMyThreads } from "~/store/threads";
+import { selectProfileOnType } from "~/store/profile";
 import { useEffect } from "react";
-import { selectAuthUser } from "~/store/auth";
 
-export function MyPostList() {
+export function MyPostList({ type }: { type: "own" | "other" }) {
   const dispatch = useAppDispatch();
-  const user = useAppSelector(selectAuthUser);
+  const profile = useAppSelector(selectProfileOnType(type));
   const threads = useAppSelector(selectMyThreads);
 
   useEffect(() => {
-    if (user) {
-      dispatch(fetchMyThreads(user.user_id));
+    if (profile) {
+      dispatch(fetchMyThreads(profile.id));
     }
-  }, [dispatch, user]);
+  }, [dispatch, profile]);
 
   if (threads.length < 1) {
     return (

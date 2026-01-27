@@ -70,7 +70,7 @@ export function ImagesFeed() {
               {/* Nav */}
               <div className="flex-none flex items-center gap-5 mx-auto mt-4">
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   disabled={idx === 0}
                   onClick={handlePrev}
                 >
@@ -82,7 +82,7 @@ export function ImagesFeed() {
                 </span>
 
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   disabled={idx === images.length - 1}
                   onClick={handleNext}
                 >

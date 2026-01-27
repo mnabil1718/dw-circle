@@ -7,6 +7,7 @@ import {
   selectSingleSuggestion,
   selectSingleFollowing,
   selectSingleFollower,
+  selectSingleActiveFollow,
 } from "~/store/follow";
 import { selectSearchResultById } from "~/store/search";
 
@@ -15,7 +16,7 @@ export function ToggleFollowButton({
   selector,
 }: {
   follow: Follow;
-  selector: "suggestions" | "following" | "followers" | "search";
+  selector: "suggestions" | "following" | "followers" | "search" | "active";
 }) {
   const dispatch = useAppDispatch();
 
@@ -29,6 +30,8 @@ export function ToggleFollowButton({
         return selectSingleFollower(follow.id)(state);
       case "search":
         return selectSearchResultById(follow.id)(state);
+      case "active":
+        return selectSingleActiveFollow(state);
       default:
         return undefined;
     }

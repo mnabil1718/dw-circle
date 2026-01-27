@@ -6,6 +6,7 @@ import { LikeBtn } from "./like-btn";
 import { useNavigate } from "react-router";
 import { ImageViewer } from "../image-viewer";
 import { ReplyInputDialog } from "../reply/reply-input-dialog";
+import { ProfileLink } from "../profile/profile-link";
 
 type PostListItemProps = {
   thread: Thread;
@@ -28,7 +29,12 @@ export function PostListItem({ thread }: PostListItemProps) {
       />
       <div className="flex flex-col gap-2">
         <div className="text-sm flex items-center gap-2">
-          <h2 className="font-medium">{thread.user.name}</h2>
+          <ProfileLink
+            targetId={thread.user.id}
+            username={thread.user.username}
+          >
+            <h2 className="font-medium hover:underline">{thread.user.name}</h2>
+          </ProfileLink>
           <span className="text-sm text-muted-foreground">
             @{thread.user.username}
           </span>

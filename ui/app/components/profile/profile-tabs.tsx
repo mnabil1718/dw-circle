@@ -1,22 +1,29 @@
 import { Link } from "react-router";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { useAppSelector } from "~/store/hooks";
-import { selectProfile } from "~/store/profile";
+import {
+  selectProfile,
+  selectProfileOnType,
+  selectProfileStatus,
+  selectUserProfile,
+} from "~/store/profile";
 import { Button } from "../ui/button";
 import { ArrowLeft } from "lucide-react";
 import { CoverImage } from "../cover-image";
 import { Avatar } from "../avatar";
 import { EditProfileDialog } from "./edit-profile-dialog";
-import { selectMyThreads } from "~/store/threads";
 import { selectAuthUser } from "~/store/auth";
 import { MyPostList } from "../post/my-post-list";
 import { ImagesFeed } from "./images-feed";
+import { ToggleFollowButton } from "../follow/toggle-follow-btn";
+import { selectSingleActiveFollow } from "~/store/follow";
 
-export function ProfileTabs() {
+export function ProfileTabs({ type }: { type: "own" | "other" }) {
   const user = useAppSelector(selectAuthUser);
-  const profile = useAppSelector(selectProfile);
+  const profile = useAppSelector(selectProfileOnType(type));
+  const follow = useAppSelector(selectSingleActiveFollow);
 
-  if (!profile) {
+  if (!profile || !follow) {
     return (
       <div className="flex flex-col flex-1 justify-center items-center text-muted-foreground">
         No profile found
@@ -46,7 +53,11 @@ export function ProfileTabs() {
                 className="w-20 h-20 -mt-10 ml-2 bg-card border-4 border-card"
               />
               <div className="mt-2">
-                <EditProfileDialog />
+                {type === "own" ? (
+                  <EditProfileDialog />
+                ) : (
+                  <ToggleFollowButton selector="active" follow={follow} />
+                )}
               </div>
             </div>
             <div className="flex flex-col gap-1">
@@ -82,7 +93,7 @@ export function ProfileTabs() {
         {/* <PostNotification /> */}
       </div>
       <TabsContent value="posts" className="flex flex-col flex-1 divide-y">
-        <MyPostList />
+        <MyPostList type={type} />
       </TabsContent>
       <TabsContent value="media" className="flex flex-col flex-1 divide-y">
         <ImagesFeed />

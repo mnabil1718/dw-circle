@@ -12,6 +12,11 @@ export const getUserFollowSuggestions = async (): Promise<Follow[]> => {
     return res.data.data!;
 };
 
+export const getUserActiveFollow = async (username: string): Promise<Follow> => {
+    const res = await api.get<APIResponse<Follow>>(`/follows/username/${username}`);
+    return res.data.data!;
+};
+
 export const postToggleUsersFollows = async (following_id: number): Promise<ToggleFollowResponse> => {
     const res = await api.post<APIResponse<ToggleFollowResponse>>('/follows', { following_id });
     return res.data.data!;

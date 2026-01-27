@@ -3,7 +3,6 @@ import { type UserModel } from "../generated/prisma/models/User.js"
 import { prisma } from "../lib/prisma/client.js";
 import { USER_ROLE } from "../generated/prisma/enums.js";
 import { InvariantError, NotFoundError } from "../utils/errors.js";
-import { STATIC_UPLOAD_PREFIX } from "../constants/upload.js";
 
 
 export async function createUser(req: CreateUser): Promise<UserModel> {
@@ -99,6 +98,31 @@ export async function getUserProfile(userId: number): Promise<RawProfileResponse
 
     return res;
 }
+
+
+export async function getUserProfileByUsername(username: string, userId: number): Promise<RawProfileResponse> {
+    const res = await prisma.user.findUnique({
+        where: {
+            username,
+            NOT: {
+                id: userId,
+            },
+        },
+        include: {
+            _count: {
+                select: {
+                    followers: true,
+                    following: true,
+                }
+            },
+        }
+    });
+
+    if (!res) throw new NotFoundError("User not found");
+
+    return res;
+}
+
 
 
 export async function getFollowingByUserId(id: number): Promise<RawFollowingResponse[]> {
@@ -263,6 +287,32 @@ export async function suggestUsersToFollow(id: number, limit: number): Promise<R
         take: limit,
     });
 }
+
+
+// for displaying is_followed on other user profile page
+export async function getActiveUserFollow(id: number, username: string): Promise<RawUserSuggestion> {
+    const res = await prisma.user.findUnique({
+        where: {
+            NOT: {
+                id,
+            },
+            username,
+        },
+        include: {
+            followers: {
+                where: {
+                    follower_id: id,
+                },
+            },
+        },
+    });
+
+    if (!res) throw new NotFoundError("User not found");
+
+    return res;
+}
+
+
 
 export async function searchUser(q: string, userId: number): Promise<RawSearchUserResponse[]> {
     return prisma.user.findMany({

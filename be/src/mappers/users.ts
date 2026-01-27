@@ -43,6 +43,17 @@ export class UserMapper {
         });
     }
 
+    static toActiveFollowerResponse(item: RawUserSuggestion): FollowResponse {
+        return {
+            id: item.id,
+            name: item.full_name,
+            username: item.username,
+            bio: item.bio ?? undefined,
+            avatar: item.photo_profile ? `${STATIC_UPLOAD_PREFIX}${item.photo_profile}` : undefined,
+            is_followed: item.followers.length > 0,
+        };
+    }
+
 
     static toSuggestionFollowerResponses(arr: RawUserSuggestion[]): FollowResponse[] {
         return arr.map((item) => {

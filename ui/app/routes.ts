@@ -8,6 +8,7 @@ export default [
     route("/home", "routes/home.tsx"),
     route("/follow", "routes/follow.tsx"),
     route("/profile", "routes/profile.tsx"),
+    route("/:username", "routes/user-profile.tsx"),
     route("/search", "routes/search.tsx"),
     route("/posts/:id", "routes/post.tsx"),
   ]),
