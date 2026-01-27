@@ -40,7 +40,13 @@ export function PostListItem({ thread }: PostListItemProps) {
         <p className="text-sm whitespace-pre-wrap wrap-break-word">
           {thread.content}
         </p>
-        <ImageViewer image_url={thread.image} />
+        <ImageViewer image_url={thread.image}>
+          <img
+            src={thread.image}
+            alt={thread.image}
+            className="w-full h-full object-cover"
+          />
+        </ImageViewer>
         <div
           onClick={(e) => e.stopPropagation()}
           className="flex items-center gap-5 text-sm"

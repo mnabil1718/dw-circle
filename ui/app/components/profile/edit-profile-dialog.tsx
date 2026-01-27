@@ -19,9 +19,8 @@ import {
 import { selectProfile, updateProfile } from "~/store/profile";
 import { Button } from "../ui/button";
 import { CoverImage } from "../cover-image";
-import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
-import { Avatar } from "../avatar";
 import { EditableAvatar } from "../editable-avatar";
+import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
 import { FormControl, FormField, FormItem, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
 
@@ -157,7 +156,7 @@ export function EditProfileDialog() {
                 <Button
                   type="submit"
                   disabled={!form.formState.isValid}
-                  className="rounded-full px-6"
+                  className="rounded-full px-6 cursor-pointer"
                 >
                   Save
                 </Button>

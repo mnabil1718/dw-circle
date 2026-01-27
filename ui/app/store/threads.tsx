@@ -1,11 +1,13 @@
-import { createAppAsyncThunk } from "./with-types";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { CreateThreadActionPayload, Thread } from "~/dto/thread";
-import { type RootState } from "./store";
-import { getThreads, postThreads } from "~/services/thread";
+import { createAppAsyncThunk } from "./with-types";
+import type { RootState } from "./store";
+
+import type { Thread, CreateThreadActionPayload } from "~/dto/thread";
 import type { ToggleLikeResponse } from "~/dto/like";
 import type { ReplyThreadMetadata } from "~/dto/reply";
-import { login, logout, selectAuthUser } from "./auth";
+
+import { getThreads, postThreads } from "~/services/thread";
+import { login, selectAuthUser } from "./auth";
 import {
   createLikeThread,
   deleteLikeThread,
@@ -13,21 +15,43 @@ import {
 } from "./thread";
 import { updateProfile } from "./profile";
 
-// ===== STATES ============
+/* =======================
+   STATE
+======================= */
 
 export interface ThreadsState {
   threads: Thread[];
-  status: "idle" | "pending" | "succeeded" | "failed"; // useful to render loader while async request
+  myThreads: Thread[];
+  status: "idle" | "pending" | "succeeded" | "failed";
   error: string | null;
 }
 
 const initialState: ThreadsState = {
   threads: [],
+  myThreads: [],
   status: "idle",
   error: null,
 };
 
-// ======== THUNKS =========
+/* =======================
+   HELPERS
+======================= */
+
+function updateThreadInLists(
+  state: ThreadsState,
+  threadId: number,
+  updater: (t: Thread) => void,
+) {
+  const t1 = state.threads.find((t) => t.id === threadId);
+  if (t1) updater(t1);
+
+  const t2 = state.myThreads.find((t) => t.id === threadId);
+  if (t2) updater(t2);
+}
+
+/* =======================
+   THUNKS
+======================= */
 
 // GET ALL
 export const fetchThreads = createAppAsyncThunk(
@@ -36,206 +60,220 @@ export const fetchThreads = createAppAsyncThunk(
     return await getThreads();
   },
   {
-    condition(arg, thunkApi) {
+    condition(_, thunkApi) {
       const user = selectAuthUser(thunkApi.getState());
       const status = selectThreadsStatus(thunkApi.getState());
-      if (status !== "idle" || !user) {
-        return false;
-      }
+      if (!user || status !== "idle") return false;
     },
   },
 );
 
-// CREATE
+// GET MY THREADS
+export const fetchMyThreads = createAppAsyncThunk(
+  "threads/fetchMyThreads",
+  async (userId: number) => {
+    return await getThreads(30, userId);
+  },
+  {
+    condition(_, thunkApi) {
+      const user = selectAuthUser(thunkApi.getState());
+      if (!user) return false;
+    },
+  },
+);
+
+// CREATE THREAD
 export const createThread = createAppAsyncThunk(
-  "threads/addThreads",
+  "threads/createThread",
   async (p: CreateThreadActionPayload) => {
     return await postThreads(p.req);
   },
 );
 
-// ========= SLICE ==========
+/* =======================
+   SLICE
+======================= */
 
 const threadsSlice = createSlice({
   name: "threads",
   initialState,
   reducers: {
+    // SOCKET: THREAD CREATED
     threadCreated(state, action: PayloadAction<Thread>) {
-      // Check if optimistic thread exists
+      const thread = action.payload;
+
+      // ---- threads ----
       const optimisticIndex = state.threads.findIndex((t) => t.optimistic);
       if (optimisticIndex !== -1) {
-        // Replace
         const temp = state.threads[optimisticIndex];
-
-        // revoke, could cause memory leak
-        if (temp.image?.startsWith("blob:")) URL.revokeObjectURL(temp.image);
-
-        state.threads[optimisticIndex] = action.payload;
-        return;
+        if (temp.image?.startsWith("blob:")) {
+          URL.revokeObjectURL(temp.image);
+        }
+        state.threads[optimisticIndex] = thread;
+      } else if (!state.threads.some((t) => t.id === thread.id)) {
+        state.threads.unshift(thread);
       }
 
-      // Otherwise, add like normal
-      const exists = state.threads.some((t) => t.id === action.payload.id);
-      if (!exists) {
-        state.threads.unshift(action.payload);
+      // ---- myThreads ----
+      const optimisticMyIndex = state.myThreads.findIndex((t) => t.optimistic);
+      if (optimisticMyIndex !== -1) {
+        state.myThreads[optimisticMyIndex] = thread;
+      } else if (!state.myThreads.some((t) => t.id === thread.id)) {
+        state.myThreads.unshift(thread);
       }
     },
 
+    // SOCKET: REPLY CREATED
     threadReplyCreated(state, action: PayloadAction<ReplyThreadMetadata>) {
       const { id, replies } = action.payload;
-
-      const thread = state.threads.find((t) => t.id === id);
-
-      if (thread) {
-        thread.replies = replies;
-      }
+      updateThreadInLists(state, id, (t) => {
+        t.replies = replies;
+      });
     },
   },
+
   extraReducers(builder) {
     builder
-
-      // ======  GET THREADS =====
-      .addCase(fetchThreads.pending, (state, _) => {
+      /* ===== FETCH THREADS ===== */
+      .addCase(fetchThreads.pending, (state) => {
         state.status = "pending";
       })
-
       .addCase(fetchThreads.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.threads = action.payload;
       })
-
       .addCase(fetchThreads.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.error.message ?? "Unknown Error";
+        state.error = action.error.message ?? "Failed to fetch threads";
       })
 
-      // ======  CREATE THREAD =====
+      /* ===== FETCH MY THREADS ===== */
+      .addCase(fetchMyThreads.fulfilled, (state, action) => {
+        state.myThreads = action.payload;
+      })
+      .addCase(fetchMyThreads.rejected, (state, action) => {
+        state.error = action.error.message ?? "Failed to fetch my threads";
+      })
+
+      /* ===== CREATE THREAD (OPTIMISTIC) ===== */
       .addCase(createThread.pending, (state, action) => {
         const user = action.meta.arg.user;
-        state.threads.unshift({
-          id: -1, // temp
+        if (!user) return;
+
+        const optimisticThread: Thread = {
+          id: -1,
           content: action.meta.arg.req.content,
           image: action.meta.arg.req.image
             ? URL.createObjectURL(action.meta.arg.req.image)
             : undefined,
           created_at: new Date().toISOString(),
           user: {
-            id: -1,
-            name: user?.name ?? "amink",
-            username: user?.username ?? "amink",
-            profile_picture: user?.avatar ?? undefined,
+            id: user.user_id,
+            name: user.name,
+            username: user.username,
+            profile_picture: user.avatar,
           },
           replies: 0,
-          isLiked: false,
           likes: 0,
+          isLiked: false,
           optimistic: true,
-        });
+        };
 
-        state.error = null;
+        state.threads.unshift(optimisticThread);
+        state.myThreads.unshift(optimisticThread);
       })
-
-      .addCase(createThread.fulfilled, (state, action) => {
-        // HANDLED ON SOCKET EVENT
-      })
-
       .addCase(createThread.rejected, (state, action) => {
         state.threads = state.threads.filter((t) => !t.optimistic);
-        state.error = action.error.message ?? "Failed to post";
+        state.myThreads = state.myThreads.filter((t) => !t.optimistic);
+        state.error = action.error.message ?? "Failed to create thread";
       })
 
-      // ======  CREATE LIKE =====
+      /* ===== LIKE THREAD ===== */
       .addCase(createLikeThread.pending, (state, action) => {
         const { tweet_id } = action.meta.arg;
         if (!tweet_id) return;
 
-        // Update in threads array
-        const threadInList = state.threads.find((t) => t.id === tweet_id);
-        if (threadInList) {
-          threadInList.likes++;
-          threadInList.isLiked = true;
-          threadInList.optimistic = true;
-        }
-
-        state.error = null;
+        updateThreadInLists(state, tweet_id, (t) => {
+          t.likes++;
+          t.isLiked = true;
+          t.optimistic = true;
+        });
       })
       .addCase(createLikeThread.rejected, (state, action) => {
         const { tweet_id } = action.meta.arg;
         if (!tweet_id) return;
 
-        // Revert in threads array
-        const threadInList = state.threads.find((t) => t.id === tweet_id);
-        if (threadInList) {
-          threadInList.likes--;
-          threadInList.isLiked = false;
-          threadInList.optimistic = false;
-        }
-
-        state.error = action.error.message ?? "Failed to like";
+        updateThreadInLists(state, tweet_id, (t) => {
+          t.likes--;
+          t.isLiked = false;
+          t.optimistic = false;
+        });
       })
 
-      // ======  DELETE LIKE =====
+      /* ===== UNLIKE THREAD ===== */
       .addCase(deleteLikeThread.pending, (state, action) => {
         const { tweet_id } = action.meta.arg;
         if (!tweet_id) return;
 
-        const threadInList = state.threads.find((t) => t.id === tweet_id);
-        if (threadInList) {
-          threadInList.likes--;
-          threadInList.isLiked = false;
-          threadInList.optimistic = true;
-        }
-
-        state.error = null;
+        updateThreadInLists(state, tweet_id, (t) => {
+          t.likes--;
+          t.isLiked = false;
+          t.optimistic = true;
+        });
       })
       .addCase(deleteLikeThread.rejected, (state, action) => {
         const { tweet_id } = action.meta.arg;
         if (!tweet_id) return;
 
-        const threadInList = state.threads.find((t) => t.id === tweet_id);
-        if (threadInList) {
-          threadInList.likes++;
-          threadInList.isLiked = true;
-          threadInList.optimistic = false;
-        }
-
-        state.error = action.error.message ?? "Failed to unlike";
+        updateThreadInLists(state, tweet_id, (t) => {
+          t.likes++;
+          t.isLiked = true;
+          t.optimistic = false;
+        });
       })
 
-      .addCase(login, (state) => {
-        return initialState;
-      })
-
+      /* ===== SOCKET LIKE TOGGLE ===== */
       .addCase(
         threadLikeToggled,
         (state, action: PayloadAction<ToggleLikeResponse>) => {
-          const t = state.threads.find(
-            (t) => t.id === action.payload.thread_id,
-          );
-          if (!t) return;
-
-          t.optimistic = false;
-          t.likes = action.payload.likes;
+          updateThreadInLists(state, action.payload.thread_id, (t) => {
+            t.likes = action.payload.likes;
+            t.optimistic = false;
+          });
         },
       )
 
+      /* ===== PROFILE UPDATE ===== */
       .addCase(updateProfile.fulfilled, (state, action) => {
         const { id, avatar } = action.payload;
 
-        state.threads.forEach((t) => {
+        const updateAvatar = (t: Thread) => {
           if (t.user.id === id) {
             t.user.profile_picture = avatar;
           }
-        });
-      });
+        };
+
+        state.threads.forEach(updateAvatar);
+        state.myThreads.forEach(updateAvatar);
+      })
+
+      /* ===== LOGOUT ===== */
+      .addCase(login, () => initialState);
   },
 });
 
 export const { threadCreated, threadReplyCreated } = threadsSlice.actions;
 export default threadsSlice.reducer;
 
-// ======== SELECT =========
+/* =======================
+   SELECTORS
+======================= */
+
 export const selectAllThreads = (state: RootState) => state.threads.threads;
 export const selectThreadsById = (id: number) => (state: RootState) =>
-  state.threads.threads.find((t) => t.id === id);
+  state.threads.threads.find((f) => f.id === id);
+export const selectMyThreads = (state: RootState) => state.threads.myThreads;
+export const selectMyImages = (state: RootState) =>
+  state.threads.myThreads.filter((t) => !!t.image);
 export const selectThreadsStatus = (state: RootState) => state.threads.status;
 export const selectThreadsError = (state: RootState) => state.threads.error;
