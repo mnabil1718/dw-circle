@@ -30,7 +30,13 @@ export const postUsers = async (req: Request, res: Response) => {
 export const postLogin = async (req: Request, res: Response) => {
 
     const { identifier, password } = req.body;
-    const u: UserModel = await getUserByIdentifier(identifier);
+
+    let identifierString = identifier as string | undefined;
+    if (identifierString?.startsWith("@")) {
+        identifierString = identifierString.split("@")[1];
+    }
+
+    const u: UserModel = await getUserByIdentifier(identifierString ?? "");
     await Hasher.compare(password, u.password);
     const accessToken: string = await generateJWT({ sub: String(u.id), role: u.role });
 

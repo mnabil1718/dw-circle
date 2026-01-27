@@ -1,7 +1,6 @@
 import { id } from "zod/locales";
 import { STATIC_UPLOAD_PREFIX } from "../constants/upload.js";
 import type { FollowResponse, RawFollowersResponse, RawFollowingResponse, RawFollowToggleResponse, RawProfileResponse, RawSearchUserResponse, RawUnfollowResponse, RawUserSuggestion, ToggleFollowResponse, UpdateProfileResponse } from "../types/users.js";
-import type { UserModel } from "../generated/prisma/models.js";
 
 export class UserMapper {
     static toProfileResponse(res: RawProfileResponse): UpdateProfileResponse {

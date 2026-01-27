@@ -6,6 +6,7 @@ import { authenticate } from "../middlewares/authenticate.js";
 import { singleImageUploadMiddleware } from "../middlewares/upload.js";
 
 const router = Router();
+
 router.get("/:id/profile", authenticate, getUsersProfile);
 router.get("/:username/profile/username", authenticate, getUsersProfileByUsername);
 router.put("/:id/profile", authenticate, singleImageUploadMiddleware, validate(UpdateProfileSchema), putUsersProfile);
