@@ -43,7 +43,6 @@ export const getThreads = async (req: Request, res: Response) => {
     res.status(code).json(success(code, "Get Data Thread Successfully", { threads }));
 }
 
-
 export const getThreadsById = async (req: Request, res: Response) => {
     const { sub } = (req as any).user;
     const { id } = req.params;

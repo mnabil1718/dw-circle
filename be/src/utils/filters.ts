@@ -2,6 +2,7 @@ import z from "zod";
 
 export const FilterSchema = z.object({
     limit: z.coerce.number().int().gte(1).optional(),
+    userId: z.coerce.number().int().gte(1).optional(),
 });
 
 export type FilterType = z.infer<typeof FilterSchema>;

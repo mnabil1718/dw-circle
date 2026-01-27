@@ -51,7 +51,6 @@ export const postLogin = async (req: Request, res: Response) => {
 
 
 export const putUsersProfile = async (req: Request, res: Response) => {
-
     const { sub } = (req as any).user;
     const userId = Number(sub);
 
