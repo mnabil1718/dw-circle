@@ -23,13 +23,24 @@ export function ProfileTabs({ type }: { type: "own" | "other" }) {
   const profile = useAppSelector(selectProfileOnType(type));
   const follow = useAppSelector(selectSingleActiveFollow);
 
-  if (!profile || !follow) {
-    return (
-      <div className="flex flex-col flex-1 justify-center items-center text-muted-foreground">
-        No profile found
-      </div>
-    );
+  if (type === "other") {
+    if (!profile || !follow) {
+      return (
+        <div className="flex flex-col flex-1 justify-center items-center text-muted-foreground">
+          No profile found
+        </div>
+      );
+    }
+  } else {
+    if (!profile) {
+      return (
+        <div className="flex flex-col flex-1 justify-center items-center text-muted-foreground">
+          No profile found
+        </div>
+      );
+    }
   }
+
   return (
     <Tabs defaultValue="posts" className="flex flex-col flex-1">
       <div className="">
