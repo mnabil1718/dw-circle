@@ -57,8 +57,7 @@ export async function checkUserIDExists(id: number): Promise<void> {
 
 
 export async function updateUserProfile(req: UpdateProfile): Promise<RawProfileResponse> {
-
-    await deleteCache("profiles:*");
+    await deleteCache("threads:*");
 
     return await prisma.user.update({
         where: {
@@ -85,9 +84,6 @@ export async function updateUserProfile(req: UpdateProfile): Promise<RawProfileR
 
 export async function getUserProfile(userId: number): Promise<RawProfileResponse> {
 
-    const cacheKey = `profiles:id:${userId}`;
-    const cached = await getCache<RawProfileResponse>(cacheKey);
-    if (cached) return cached;
 
     const res = await prisma.user.findUnique({
         where: {
@@ -105,7 +101,6 @@ export async function getUserProfile(userId: number): Promise<RawProfileResponse
 
     if (!res) throw new NotFoundError("User not found");
 
-    await setCache(cacheKey, res);
 
     return res;
 }
@@ -113,9 +108,6 @@ export async function getUserProfile(userId: number): Promise<RawProfileResponse
 
 export async function getUserProfileByUsername(username: string, userId: number): Promise<RawProfileResponse> {
 
-    const cacheKey = `profiles:username:${username}`;
-    const cached = await getCache<RawProfileResponse>(cacheKey);
-    if (cached) return cached;
 
     const res = await prisma.user.findUnique({
         where: {
@@ -136,7 +128,6 @@ export async function getUserProfileByUsername(username: string, userId: number)
 
     if (!res) throw new NotFoundError("User not found");
 
-    await setCache(cacheKey, res);
 
     return res;
 }
