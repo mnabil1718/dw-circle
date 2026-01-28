@@ -5,7 +5,7 @@ import { Hasher } from "../utils/hasher.js";
 import { StatusCodes } from "http-status-codes";
 import { success } from "../utils/response.js";
 import { generateJWT } from "../utils/tokenize.js";
-import { GetUserFollowsSchema, SearchUserFilterSchema, type FollowResponse, type FollowToggledSocketPayload, type FollowToggledSocketType, type GetUserFollowsType, type LoginUserResponse, type RawFollowToggleResponse, type RegisterUserResponse, type ToggleFollowResponse, type UpdateProfile } from "../types/users.js";
+import { GetUserFollowsSchema, SearchUserFilterSchema, type FollowResponse, type FollowToggledSocketPayload, type FollowToggledSocketType, type GetUserFollowsType, type LoginUserResponse, type RegisterUserResponse, type ToggleFollowResponse, type UpdateProfile } from "../types/users.js";
 import { UserMapper } from "../mappers/users.js";
 import { STATIC_UPLOAD_PREFIX } from "../constants/upload.js";
 import { getSocketServer } from "../sockets/server.js";

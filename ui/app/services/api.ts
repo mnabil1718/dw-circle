@@ -1,5 +1,4 @@
 import axios from "axios";
-import { redirect } from "react-router";
 import { logout } from "~/store/auth";
 import { store } from "~/store/store";
 import { toastError } from "~/utils/toast";
@@ -30,7 +29,7 @@ api.interceptors.response.use(
             // auth error, logging out user
             if (err.response?.status === 401) {
                 store.dispatch(logout());
-                msg = "token expired. Please log in again";
+                return Promise.reject(err);
             }
             // Backend error with response
             else if (err.response) {

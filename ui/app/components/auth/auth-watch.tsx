@@ -19,6 +19,7 @@ export function AuthWatcher({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!user && !publicRoutes.includes(location.pathname)) {
+      toastError("token expired. Please log in again");
       navigate("/login", { replace: true });
     }
   }, [user, navigate, location.pathname]);
