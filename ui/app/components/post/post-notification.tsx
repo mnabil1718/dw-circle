@@ -12,8 +12,11 @@ export function PostNotification() {
   const threads = useAppSelector(selectAllThreads);
   const prev = useRef<number>(threads.length);
 
+  console.log("POST NOTIF MOUNTED");
+
   useEffect(() => {
-    if (threads.length > prev.current && scrolled) {
+    if (threads.length > prev.current) {
+      console.log("NAMBAH");
       setShowNotification(true);
     }
 
