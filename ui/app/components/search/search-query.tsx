@@ -24,11 +24,13 @@ export function SearchQuery() {
   useEffect(() => {
     if (dQuery.trim() === "") return;
     dispatch(fetchResults(dQuery));
+  }, [dispatch, dQuery]);
 
+  useEffect(() => {
     return () => {
       dispatch(resetSearch());
     };
-  }, [dispatch, dQuery]);
+  }, [dispatch]);
 
   const searchHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(setKeyword(e.target.value));
