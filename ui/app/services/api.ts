@@ -29,7 +29,7 @@ api.interceptors.response.use(
             // auth error, logging out user
             if (err.response?.status === 401) {
                 store.dispatch(logout());
-                return Promise.reject(err);
+                msg = "token expired. Please log in again";
             }
             // Backend error with response
             else if (err.response) {
