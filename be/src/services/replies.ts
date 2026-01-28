@@ -2,6 +2,7 @@ import { prisma } from "../lib/prisma/client.js";
 import { NotFoundError } from "../utils/errors.js";
 import { buildFilterQuery, type FilterType } from "../utils/filters.js";
 import type { CreateReply, CreateReplyResponse, RawReplyResponse } from "../types/replies.js";
+import { deleteCache } from "../utils/cache.js";
 
 export async function createReply(req: CreateReply): Promise<CreateReplyResponse> {
 
@@ -33,6 +34,7 @@ export async function createReply(req: CreateReply): Promise<CreateReplyResponse
         }),
     ]);
 
+    await deleteCache("threads:*");
     return {
         raw,
         thread: {

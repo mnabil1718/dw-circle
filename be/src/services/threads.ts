@@ -45,7 +45,6 @@ export async function getAllThread(user_id: number, filter: FilterType): Promise
         return cached;
     }
 
-    console.log("NOT CACHED");
 
     const res = await prisma.thread.findMany({
         where: {

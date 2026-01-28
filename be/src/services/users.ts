@@ -57,7 +57,7 @@ export async function checkUserIDExists(id: number): Promise<void> {
 
 
 export async function updateUserProfile(req: UpdateProfile): Promise<RawProfileResponse> {
-
+    await deleteCache("threads:*");
 
     return await prisma.user.update({
         where: {
