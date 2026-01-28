@@ -14,4 +14,5 @@ router.use("/likes", likeRoutes);
 router.use("/users", userRoutes);
 router.use("/follows", followRoutes);
 router.use("/search", searchRoutes);
+router.use("/healthcheck", (req, res) => { res.status(200).json({ status: "operational" }) })
 export default router;

@@ -1,46 +1,17 @@
-import express from "express";
-import bodyParser from "body-parser";
 import { config } from "./utils/config.js";
-import routes from "./routes/index.js";
-import swaggerRoute from "./lib/swagger/swagger.js";
-import { errorHandler } from "./middlewares/error.js";
-import { corsMiddleware } from "./middlewares/cors.js";
-import { limiterMiddleware } from "./middlewares/rate-limit.js";
-import cookieParser from "cookie-parser";
-import path from "path";
-import { createServer } from "http";
-import { createSocketServer } from "./sockets/server.js";
-import { initSocket } from "./sockets/conn.js";
 import { initRedis } from "./lib/redis/redis.js";
+import { createHttpServer } from "./server.js";
 
-const __dirname = new URL(".", import.meta.url).pathname;
+async function bootstrap() {
+    await initRedis();
 
-await initRedis();
+    const server = createHttpServer();
 
-const app = express();
-const httpServer = createServer(app);
+    server.listen(config.port, () => {
+        console.log(
+            `Circle app backend service is running on ${config.host}:${config.port}...`
+        );
+    });
+}
 
-createSocketServer(httpServer);
-initSocket();
-
-app.use('/api/docs', swaggerRoute);
-
-app.use(
-    "/static",
-    express.static(path.join(__dirname, "public"))
-);
-
-app.use(cookieParser());
-app.use(corsMiddleware);
-app.use(limiterMiddleware);
-
-app.use(bodyParser.urlencoded());
-app.use(bodyParser.json());
-
-app.use("/api/v1", routes);
-
-app.use(errorHandler);
-
-httpServer.listen(config.port, () => {
-    console.log(`Circle app backend service is running on ${config.host}:${config.port}...`);
-});
+bootstrap();
