@@ -41,7 +41,11 @@ export async function getAllThread(user_id: number, filter: FilterType): Promise
     cacheKey = `threads:all:${JSON.stringify(filter)}`;
 
     const cached = await getCache<RawThreadResponse[]>(cacheKey);
-    if (cached) return cached;
+    if (cached && cached.length > 0) {
+        return cached;
+    }
+
+    console.log("NOT CACHED");
 
     const res = await prisma.thread.findMany({
         where: {
@@ -72,7 +76,7 @@ export async function getAllThread(user_id: number, filter: FilterType): Promise
         ...limits
     });
 
-    await setCache(cacheKey, res);
+    await setCache(cacheKey, res, 60);
 
     return res;
 }

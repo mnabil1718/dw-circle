@@ -4,7 +4,6 @@ import { createHttpServer } from "./server.js";
 
 async function bootstrap() {
     await initRedis();
-
     const server = createHttpServer();
 
     server.listen(config.port, () => {

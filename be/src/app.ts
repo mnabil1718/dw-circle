@@ -11,25 +11,25 @@ import { limiterMiddleware } from "./middlewares/rate-limit.js";
 const __dirname = new URL(".", import.meta.url).pathname;
 
 export function createApp() {
-  const app = express();
+    const app = express();
 
-  app.use("/api/docs", swaggerRoute);
+    app.use("/api/v1/docs", swaggerRoute);
 
-  app.use(
-    "/static",
-    express.static(path.join(__dirname, "public"))
-  );
+    app.use(
+        "/static",
+        express.static(path.join(__dirname, "public"))
+    );
 
-  app.use(cookieParser());
-  app.use(corsMiddleware);
-  app.use(limiterMiddleware);
+    app.use(cookieParser());
+    app.use(corsMiddleware);
+    app.use(limiterMiddleware);
 
-  app.use(bodyParser.urlencoded({ extended: false }));
-  app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(bodyParser.json());
 
-  app.use("/api/v1", routes);
+    app.use("/api/v1", routes);
 
-  app.use(errorHandler);
+    app.use(errorHandler);
 
-  return app;
+    return app;
 }

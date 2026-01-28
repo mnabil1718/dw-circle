@@ -1,5 +1,6 @@
 import { prisma } from "../lib/prisma/client.js";
 import type { ToggleLikeResponse, ToggleReplyLikeResponse } from "../types/likes.js";
+import { deleteCache } from "../utils/cache.js";
 
 export async function createThreadLike(userId: number, threadId: number): Promise<ToggleLikeResponse> {
     const [_, likes] = await prisma.$transaction([
@@ -19,6 +20,8 @@ export async function createThreadLike(userId: number, threadId: number): Promis
             },
         }),
     ]);
+
+    await deleteCache("threads:*");
 
     return {
         thread_id: threadId,
@@ -47,6 +50,8 @@ export async function deleteThreadLike(userId: number, threadId: number): Promis
         }),
     ]);
 
+    await deleteCache("threads:*");
+
 
     return {
         user_id: userId,
@@ -65,6 +70,7 @@ export async function checkThreadLikeExists(userId: number, threadId: number): P
             }
         },
     });
+
 
 
     if (!e) return false;
@@ -96,6 +102,9 @@ export async function createReplyLike(userId: number, replyId: number): Promise<
         }),
     ]);
 
+    await deleteCache("threads:*");
+
+
     return {
         reply_id: replyId,
         user_id: userId,
@@ -122,6 +131,10 @@ export async function deleteReplyLike(userId: number, replyId: number): Promise<
             },
         }),
     ]);
+
+
+    await deleteCache("threads:*");
+
 
 
     return {

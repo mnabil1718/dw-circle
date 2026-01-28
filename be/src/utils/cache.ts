@@ -17,8 +17,15 @@ export async function setCache(key: string, value: unknown, ttl = 1800): Promise
     });
 }
 
-export async function deleteCache(key: string): Promise<void> {
-    await redis.del(key);
-}
+// export async function deleteCache(key: string): Promise<void> {
+//     await redis.del(key);
+// }
 
+export async function deleteCache(pattern: string): Promise<void> {
+    const keys = await redis.keys(pattern);
+
+    if (keys.length > 0) {
+        await redis.del(keys);
+    }
+}
 

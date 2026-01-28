@@ -12,7 +12,6 @@ describe("POST /api/v1/auth/register", () => {
             name: "TestUser",
             email: "test.mnabil@test.com",
             password: "@Password123",
-
         };
 
         const res = await request(app)
